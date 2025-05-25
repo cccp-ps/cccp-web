@@ -477,20 +477,20 @@ import '../styles/global.css';
 							// Future event
 							const absDiff = Math.abs(diff);
 							const timeString = formatTime(absDiff);
-							element.innerHTML = `<div class="text-blue-400">${timeString}</div><div class="text-sm text-blue-300">UNTIL EVENT</div>`;
+							element.innerHTML = `${timeString}`;
 							
 							if (labelElement) {
 								labelElement.textContent = "TIME REMAINING";
-								labelElement.className = "text-blue-400 font-bold text-lg mb-2";
+								labelElement.className = "text-blue-400 font-bold text-lg mb-3 tracking-wide";
 							}
 						} else {
 							// Past event
 							const timeString = formatTime(diff);
-							element.innerHTML = `<div class="text-white">${timeString}</div><div class="text-sm text-gray-400">SINCE EVENT</div>`;
+							element.innerHTML = `${timeString}`;
 							
 							if (labelElement) {
 								labelElement.textContent = "TIME ELAPSED";
-								labelElement.className = event.id === 3 || event.id === 5 ? "text-green-400 font-bold text-lg mb-2" : "text-red-400 font-bold text-lg mb-2";
+								labelElement.className = event.id === 3 || event.id === 5 ? "text-green-400 font-bold text-lg mb-3 tracking-wide" : "text-red-400 font-bold text-lg mb-3 tracking-wide";
 							}
 						}
 					}
