@@ -4,6 +4,7 @@
 I have an existing Astro project that I've already set up with:
 1. `npm create astro@latest` (basic/minimal setup)
 2. `npx astro add tailwind` (TailwindCSS v4 added)
+3. `npx astro add astro-icon` (Astro Icon integration added)
 
 ## Project Objective
 Create a single-page "time since" tracker website with Communist/Socialist aesthetics and Palestinian solidarity themes, displaying a timeline of major events after October 7, 2023, in the Israel-Gaza conflict with live counters.
