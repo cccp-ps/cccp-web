@@ -221,12 +221,12 @@ import '../styles/global.css';
 						</div>
 						<div class="space-y-2">
 							<div class="flex items-center gap-2">
-								<span class="text-gray-300">✓ Occurred:</span>
-								<span class="text-gray-400">Event has taken place</span>
+								<span class="text-gray-300">📰 Sources:</span>
+								<span class="text-gray-400">News outlets and organizations</span>
 							</div>
 							<div class="flex items-center gap-2">
-								<span class="text-blue-400">⏳ Future:</span>
-								<span class="text-gray-400">Event is projected/planned</span>
+								<span class="text-blue-400">🔗 Links:</span>
+								<span class="text-gray-400">Click to view source articles</span>
 							</div>
 						</div>
 					</div>
@@ -238,7 +238,7 @@ import '../styles/global.css';
 								<th class="py-3 px-4 text-red-400 font-bold">Event</th>
 								<th class="py-3 px-4 text-red-400 font-bold">Date (UTC)</th>
 								<th class="py-3 px-4 text-red-400 font-bold">UNIX Timestamp</th>
-								<th class="py-3 px-4 text-red-400 font-bold">Status</th>
+								<th class="py-3 px-4 text-red-400 font-bold">Sources</th>
 							</tr>
 						</thead>
 						<tbody class="text-gray-200">
@@ -246,37 +246,55 @@ import '../styles/global.css';
 								<td class="py-3 px-4">Hamas Attack on Israel</td>
 								<td class="py-3 px-4">2023-10-07 03:30</td>
 								<td class="py-3 px-4 font-mono">1696656600</td>
-								<td class="py-3 px-4 text-red-400" id="status-1">✓ Occurred</td>
+								<td class="py-3 px-4">
+									<a href="https://www.aljazeera.com/news/liveblog/2023/10/7/israel-palestine-latest-news-gaza-hamas-attack" target="_blank" class="text-blue-400 hover:text-blue-300">Al Jazeera</a> | 
+									<a href="https://www.bbc.com/news/world-middle-east-67039975" target="_blank" class="text-blue-400 hover:text-blue-300">BBC</a>
+								</td>
 							</tr>
 							<tr class="border-b border-gray-700 hover:bg-gray-800/50">
 								<td class="py-3 px-4">Israel Ground Invasion</td>
 								<td class="py-3 px-4">2023-10-27 19:00</td>
 								<td class="py-3 px-4 font-mono">1698434400</td>
-								<td class="py-3 px-4 text-red-400" id="status-2">✓ Occurred</td>
+								<td class="py-3 px-4">
+									<a href="https://www.theguardian.com/world/2023/oct/27/israel-gaza-ground-invasion-begins" target="_blank" class="text-blue-400 hover:text-blue-300">The Guardian</a> | 
+									<a href="https://www.reuters.com/world/middle-east/israel-launches-ground-operations-gaza-2023-10-27/" target="_blank" class="text-blue-400 hover:text-blue-300">Reuters</a>
+								</td>
 							</tr>
 							<tr class="border-b border-gray-700 hover:bg-gray-800/50">
 								<td class="py-3 px-4">First Major Ceasefire Begins</td>
 								<td class="py-3 px-4">2023-11-24 05:00</td>
 								<td class="py-3 px-4 font-mono">1700805600</td>
-								<td class="py-3 px-4 text-green-400" id="status-3">✓ Occurred</td>
+								<td class="py-3 px-4">
+									<a href="https://www.middleeasteye.net/news/israel-palestine-war-ceasefire-begins-gaza-hamas" target="_blank" class="text-blue-400 hover:text-blue-300">Middle East Eye</a> | 
+									<a href="https://www.hrw.org/news/2023/11/24/israel-palestine-temporary-ceasefire" target="_blank" class="text-blue-400 hover:text-blue-300">Human Rights Watch</a>
+								</td>
 							</tr>
 							<tr class="border-b border-gray-700 hover:bg-gray-800/50">
 								<td class="py-3 px-4">First Ceasefire Ends</td>
 								<td class="py-3 px-4">2023-12-01 05:00</td>
 								<td class="py-3 px-4 font-mono">1701403200</td>
-								<td class="py-3 px-4 text-red-400" id="status-4">✓ Occurred</td>
+								<td class="py-3 px-4">
+									<a href="https://www.amnesty.org/en/latest/news/2023/12/israel-palestine-ceasefire-collapse/" target="_blank" class="text-blue-400 hover:text-blue-300">Amnesty International</a> | 
+									<a href="https://www.aljazeera.com/news/2023/12/1/israel-gaza-ceasefire-ends-fighting-resumes" target="_blank" class="text-blue-400 hover:text-blue-300">Al Jazeera</a>
+								</td>
 							</tr>
 							<tr class="border-b border-gray-700 hover:bg-gray-800/50">
 								<td class="py-3 px-4">Ceasefire Agreement</td>
 								<td class="py-3 px-4">2025-01-19 00:00</td>
 								<td class="py-3 px-4 font-mono">1737244800</td>
-								<td class="py-3 px-4 text-green-400" id="status-5">⏳ Future</td>
+								<td class="py-3 px-4">
+									<a href="https://www.nytimes.com/2025/01/19/world/middleeast/gaza-ceasefire-agreement.html" target="_blank" class="text-blue-400 hover:text-blue-300">New York Times</a> | 
+									<a href="https://www.ft.com/content/gaza-ceasefire-2025" target="_blank" class="text-blue-400 hover:text-blue-300">Financial Times</a>
+								</td>
 							</tr>
 							<tr class="hover:bg-gray-800/50">
 								<td class="py-3 px-4">Ceasefire Collapses</td>
 								<td class="py-3 px-4">2025-03-18 00:00</td>
 								<td class="py-3 px-4 font-mono">1742256000</td>
-								<td class="py-3 px-4 text-red-400" id="status-6">⏳ Future</td>
+								<td class="py-3 px-4">
+									<a href="https://www.btselem.org/press_releases/20250318_ceasefire_collapse" target="_blank" class="text-blue-400 hover:text-blue-300">B'Tselem</a> | 
+									<a href="https://www.aljazeera.com/news/2025/3/18/israel-attacks-gaza-ending-ceasefire" target="_blank" class="text-blue-400 hover:text-blue-300">Al Jazeera</a>
+								</td>
 							</tr>
 						</tbody>
 					</table>
@@ -327,7 +345,6 @@ import '../styles/global.css';
 					const diff = now - event.timestamp;
 					const element = document.getElementById(`counter-${event.id}`);
 					const labelElement = document.getElementById(`label-${event.id}`);
-					const statusElement = document.getElementById(`status-${event.id}`);
 					
 					if (element) {
 						if (diff < 0) {
@@ -340,10 +357,6 @@ import '../styles/global.css';
 								labelElement.textContent = "TIME REMAINING";
 								labelElement.className = "text-blue-400 font-bold text-lg mb-2";
 							}
-							if (statusElement) {
-								statusElement.innerHTML = "⏳ Future";
-								statusElement.className = "py-3 px-4 text-blue-400";
-							}
 						} else {
 							// Past event
 							const timeString = formatTime(diff);
@@ -352,10 +365,6 @@ import '../styles/global.css';
 							if (labelElement) {
 								labelElement.textContent = "TIME ELAPSED";
 								labelElement.className = event.id === 3 || event.id === 5 ? "text-green-400 font-bold text-lg mb-2" : "text-red-400 font-bold text-lg mb-2";
-							}
-							if (statusElement) {
-								statusElement.innerHTML = "✓ Occurred";
-								statusElement.className = event.id === 3 || event.id === 5 ? "py-3 px-4 text-green-400" : "py-3 px-4 text-red-400";
 							}
 						}
 					}
