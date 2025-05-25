@@ -29,33 +29,52 @@ import '../styles/global.css';
 		</header>
 
 		<!-- Main Content -->
-		<main class="max-w-6xl mx-auto px-4 py-8">
+		<main class="max-w-7xl mx-auto px-4 py-8">
 			<!-- Event Cards -->
-			<div class="space-y-8">
+			<div class="space-y-12">
 				<!-- Event 1: October 7, 2023 -->
-				<div class="bg-gradient-to-r from-gray-900 to-red-900 border-l-8 border-red-600 rounded-lg p-6 shadow-2xl">
-					<div class="flex flex-col lg:flex-row lg:items-start lg:gap-8">
-						<div class="lg:w-2/3 lg:pr-4">
-							<h2 class="text-2xl md:text-3xl font-bold text-red-400 mb-3">
-								📅 October 7, 2023 – Hamas Attack on Israel
-							</h2>
-							<div class="space-y-2 mb-4">
-								<p class="text-gray-300 text-lg">
-									<span class="font-semibold">DateTime:</span> 2023-10-07 03:30 UTC
+				<div class="group relative">
+					<div class="absolute inset-0 bg-gradient-to-r from-red-500/20 to-red-600/20 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+					<div class="relative bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-sm border border-red-500/30 rounded-2xl p-8 shadow-2xl hover:shadow-red-500/20 transition-all duration-300">
+						<div class="flex flex-col lg:flex-row lg:items-center lg:gap-12">
+							<div class="lg:flex-1 space-y-6">
+								<!-- Date Badge -->
+								<div class="inline-flex items-center gap-3 bg-red-500/20 border border-red-500/30 rounded-full px-6 py-2">
+									<div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+									<span class="text-red-300 font-semibold text-lg tracking-wide">October 7, 2023</span>
+								</div>
+								
+								<!-- Title -->
+								<h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+									Hamas Attack on Israel
+								</h2>
+								
+								<!-- Description -->
+								<p class="text-gray-300 text-xl leading-relaxed">
+									The beginning of the current escalation in Gaza and the West Bank.
 								</p>
-								<p class="text-gray-300 text-lg">
-									<span class="font-semibold">UNIX:</span> 1696656600
-								</p>
+								
+								<!-- Metadata -->
+								<div class="flex flex-wrap gap-6 text-sm text-gray-400">
+									<div class="flex items-center gap-2">
+										<span class="text-gray-500">🕐</span>
+										<span>03:30 UTC</span>
+									</div>
+									<div class="flex items-center gap-2">
+										<span class="text-gray-500">⚡</span>
+										<span class="font-mono">1696656600</span>
+									</div>
+								</div>
 							</div>
-							<p class="text-gray-200 text-lg leading-relaxed">
-								The beginning of the current escalation in Gaza and the West Bank.
-							</p>
-						</div>
-						<div class="mt-6 lg:mt-0 lg:w-1/3 lg:flex-shrink-0">
-							<div class="bg-black/50 rounded-lg p-4 text-center">
-								<div class="text-red-400 font-bold text-lg mb-2">TIME ELAPSED</div>
-								<div id="counter-1" class="text-2xl font-mono text-white">
-									<!-- Counter will be populated by JavaScript -->
+							
+							<!-- Counter Display -->
+							<div class="mt-8 lg:mt-0 lg:w-80 lg:flex-shrink-0">
+								<div class="bg-black/60 border border-red-500/30 rounded-xl p-6 text-center backdrop-blur-sm">
+									<div class="text-red-400 font-bold text-lg mb-3 tracking-wide">TIME ELAPSED</div>
+									<div id="counter-1" class="text-2xl lg:text-3xl font-mono text-white">
+										<!-- Counter will be populated by JavaScript -->
+									</div>
+									<div class="mt-3 text-sm text-gray-400">SINCE EVENT</div>
 								</div>
 							</div>
 						</div>
@@ -63,29 +82,48 @@ import '../styles/global.css';
 				</div>
 
 				<!-- Event 2: October 27, 2023 -->
-				<div class="bg-gradient-to-r from-gray-900 to-red-900 border-l-8 border-red-600 rounded-lg p-6 shadow-2xl">
-					<div class="flex flex-col lg:flex-row lg:items-start lg:gap-8">
-						<div class="lg:w-2/3 lg:pr-4">
-							<h2 class="text-2xl md:text-3xl font-bold text-red-400 mb-3">
-								⚔️ October 27, 2023 – Israel Ground Invasion
-							</h2>
-							<div class="space-y-2 mb-4">
-								<p class="text-gray-300 text-lg">
-									<span class="font-semibold">DateTime:</span> 2023-10-27 19:00 UTC
+				<div class="group relative">
+					<div class="absolute inset-0 bg-gradient-to-r from-red-500/20 to-red-600/20 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+					<div class="relative bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-sm border border-red-500/30 rounded-2xl p-8 shadow-2xl hover:shadow-red-500/20 transition-all duration-300">
+						<div class="flex flex-col lg:flex-row lg:items-center lg:gap-12">
+							<div class="lg:flex-1 space-y-6">
+								<!-- Date Badge -->
+								<div class="inline-flex items-center gap-3 bg-red-500/20 border border-red-500/30 rounded-full px-6 py-2">
+									<div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+									<span class="text-red-300 font-semibold text-lg tracking-wide">October 27, 2023</span>
+								</div>
+								
+								<!-- Title -->
+								<h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+									Israel Ground Invasion
+								</h2>
+								
+								<!-- Description -->
+								<p class="text-gray-300 text-xl leading-relaxed">
+									Israel began its ground invasion of Gaza, escalating the conflict significantly.
 								</p>
-								<p class="text-gray-300 text-lg">
-									<span class="font-semibold">UNIX:</span> 1698434400
-								</p>
+								
+								<!-- Metadata -->
+								<div class="flex flex-wrap gap-6 text-sm text-gray-400">
+									<div class="flex items-center gap-2">
+										<span class="text-gray-500">🕐</span>
+										<span>19:00 UTC</span>
+									</div>
+									<div class="flex items-center gap-2">
+										<span class="text-gray-500">⚡</span>
+										<span class="font-mono">1698434400</span>
+									</div>
+								</div>
 							</div>
-							<p class="text-gray-200 text-lg leading-relaxed">
-								Israel began its ground invasion of Gaza, escalating the conflict significantly.
-							</p>
-						</div>
-						<div class="mt-6 lg:mt-0 lg:w-1/3 lg:flex-shrink-0">
-							<div class="bg-black/50 rounded-lg p-4 text-center">
-								<div class="text-red-400 font-bold text-lg mb-2">TIME ELAPSED</div>
-								<div id="counter-2" class="text-2xl font-mono text-white">
-									<!-- Counter will be populated by JavaScript -->
+							
+							<!-- Counter Display -->
+							<div class="mt-8 lg:mt-0 lg:w-80 lg:flex-shrink-0">
+								<div class="bg-black/60 border border-red-500/30 rounded-xl p-6 text-center backdrop-blur-sm">
+									<div class="text-red-400 font-bold text-lg mb-3 tracking-wide">TIME ELAPSED</div>
+									<div id="counter-2" class="text-2xl lg:text-3xl font-mono text-white">
+										<!-- Counter will be populated by JavaScript -->
+									</div>
+									<div class="mt-3 text-sm text-gray-400">SINCE EVENT</div>
 								</div>
 							</div>
 						</div>
@@ -93,29 +131,48 @@ import '../styles/global.css';
 				</div>
 
 				<!-- Event 3: November 24, 2023 -->
-				<div class="bg-gradient-to-r from-gray-900 to-green-900 border-l-8 border-green-600 rounded-lg p-6 shadow-2xl">
-					<div class="flex flex-col lg:flex-row lg:items-start lg:gap-8">
-						<div class="lg:w-2/3 lg:pr-4">
-							<h2 class="text-2xl md:text-3xl font-bold text-green-400 mb-3">
-								🕊️ November 24, 2023 – First Major Ceasefire Begins
-							</h2>
-							<div class="space-y-2 mb-4">
-								<p class="text-gray-300 text-lg">
-									<span class="font-semibold">DateTime:</span> 2023-11-24 05:00 UTC
+				<div class="group relative">
+					<div class="absolute inset-0 bg-gradient-to-r from-green-500/20 to-green-600/20 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+					<div class="relative bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-sm border border-green-500/30 rounded-2xl p-8 shadow-2xl hover:shadow-green-500/20 transition-all duration-300">
+						<div class="flex flex-col lg:flex-row lg:items-center lg:gap-12">
+							<div class="lg:flex-1 space-y-6">
+								<!-- Date Badge -->
+								<div class="inline-flex items-center gap-3 bg-green-500/20 border border-green-500/30 rounded-full px-6 py-2">
+									<div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+									<span class="text-green-300 font-semibold text-lg tracking-wide">November 24, 2023</span>
+								</div>
+								
+								<!-- Title -->
+								<h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+									First Major Ceasefire Begins
+								</h2>
+								
+								<!-- Description -->
+								<p class="text-gray-300 text-xl leading-relaxed">
+									A temporary ceasefire began, offering brief hope for peace and humanitarian aid delivery.
 								</p>
-								<p class="text-gray-300 text-lg">
-									<span class="font-semibold">UNIX:</span> 1700805600
-								</p>
+								
+								<!-- Metadata -->
+								<div class="flex flex-wrap gap-6 text-sm text-gray-400">
+									<div class="flex items-center gap-2">
+										<span class="text-gray-500">🕐</span>
+										<span>05:00 UTC</span>
+									</div>
+									<div class="flex items-center gap-2">
+										<span class="text-gray-500">⚡</span>
+										<span class="font-mono">1700805600</span>
+									</div>
+								</div>
 							</div>
-							<p class="text-gray-200 text-lg leading-relaxed">
-								A temporary ceasefire began, offering brief hope for peace and humanitarian aid delivery.
-							</p>
-						</div>
-						<div class="mt-6 lg:mt-0 lg:w-1/3 lg:flex-shrink-0">
-							<div class="bg-black/50 rounded-lg p-4 text-center">
-								<div class="text-green-400 font-bold text-lg mb-2">TIME ELAPSED</div>
-								<div id="counter-3" class="text-2xl font-mono text-white">
-									<!-- Counter will be populated by JavaScript -->
+							
+							<!-- Counter Display -->
+							<div class="mt-8 lg:mt-0 lg:w-80 lg:flex-shrink-0">
+								<div class="bg-black/60 border border-green-500/30 rounded-xl p-6 text-center backdrop-blur-sm">
+									<div class="text-green-400 font-bold text-lg mb-3 tracking-wide" id="label-3">TIME ELAPSED</div>
+									<div id="counter-3" class="text-2xl lg:text-3xl font-mono text-white">
+										<!-- Counter will be populated by JavaScript -->
+									</div>
+									<div class="mt-3 text-sm text-gray-400">SINCE EVENT</div>
 								</div>
 							</div>
 						</div>
@@ -123,29 +180,48 @@ import '../styles/global.css';
 				</div>
 
 				<!-- Event 4: December 1, 2023 -->
-				<div class="bg-gradient-to-r from-gray-900 to-red-900 border-l-8 border-red-600 rounded-lg p-6 shadow-2xl">
-					<div class="flex flex-col lg:flex-row lg:items-start lg:gap-8">
-						<div class="lg:w-2/3 lg:pr-4">
-							<h2 class="text-2xl md:text-3xl font-bold text-red-400 mb-3">
-								💔 December 1, 2023 – First Ceasefire Ends
-							</h2>
-							<div class="space-y-2 mb-4">
-								<p class="text-gray-300 text-lg">
-									<span class="font-semibold">DateTime:</span> 2023-12-01 05:00 UTC
+				<div class="group relative">
+					<div class="absolute inset-0 bg-gradient-to-r from-red-500/20 to-red-600/20 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+					<div class="relative bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-sm border border-red-500/30 rounded-2xl p-8 shadow-2xl hover:shadow-red-500/20 transition-all duration-300">
+						<div class="flex flex-col lg:flex-row lg:items-center lg:gap-12">
+							<div class="lg:flex-1 space-y-6">
+								<!-- Date Badge -->
+								<div class="inline-flex items-center gap-3 bg-red-500/20 border border-red-500/30 rounded-full px-6 py-2">
+									<div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+									<span class="text-red-300 font-semibold text-lg tracking-wide">December 1, 2023</span>
+								</div>
+								
+								<!-- Title -->
+								<h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+									First Ceasefire Ends
+								</h2>
+								
+								<!-- Description -->
+								<p class="text-gray-300 text-xl leading-relaxed">
+									The brief ceasefire collapsed, and hostilities resumed with devastating consequences.
 								</p>
-								<p class="text-gray-300 text-lg">
-									<span class="font-semibold">UNIX:</span> 1701403200
-								</p>
+								
+								<!-- Metadata -->
+								<div class="flex flex-wrap gap-6 text-sm text-gray-400">
+									<div class="flex items-center gap-2">
+										<span class="text-gray-500">🕐</span>
+										<span>05:00 UTC</span>
+									</div>
+									<div class="flex items-center gap-2">
+										<span class="text-gray-500">⚡</span>
+										<span class="font-mono">1701403200</span>
+									</div>
+								</div>
 							</div>
-							<p class="text-gray-200 text-lg leading-relaxed">
-								The brief ceasefire collapsed, and hostilities resumed with devastating consequences.
-							</p>
-						</div>
-						<div class="mt-6 lg:mt-0 lg:w-1/3 lg:flex-shrink-0">
-							<div class="bg-black/50 rounded-lg p-4 text-center">
-								<div class="text-red-400 font-bold text-lg mb-2">TIME ELAPSED</div>
-								<div id="counter-4" class="text-2xl font-mono text-white">
-									<!-- Counter will be populated by JavaScript -->
+							
+							<!-- Counter Display -->
+							<div class="mt-8 lg:mt-0 lg:w-80 lg:flex-shrink-0">
+								<div class="bg-black/60 border border-red-500/30 rounded-xl p-6 text-center backdrop-blur-sm">
+									<div class="text-red-400 font-bold text-lg mb-3 tracking-wide">TIME ELAPSED</div>
+									<div id="counter-4" class="text-2xl lg:text-3xl font-mono text-white">
+										<!-- Counter will be populated by JavaScript -->
+									</div>
+									<div class="mt-3 text-sm text-gray-400">SINCE EVENT</div>
 								</div>
 							</div>
 						</div>
@@ -153,29 +229,48 @@ import '../styles/global.css';
 				</div>
 
 				<!-- Event 5: January 19, 2025 -->
-				<div class="bg-gradient-to-r from-gray-900 to-green-900 border-l-8 border-green-600 rounded-lg p-6 shadow-2xl">
-					<div class="flex flex-col lg:flex-row lg:items-start lg:gap-8">
-						<div class="lg:w-2/3 lg:pr-4">
-							<h2 class="text-2xl md:text-3xl font-bold text-green-400 mb-3">
-								🕊️ January 19, 2025 – Ceasefire Agreement
-							</h2>
-							<div class="space-y-2 mb-4">
-								<p class="text-gray-300 text-lg">
-									<span class="font-semibold">DateTime:</span> 2025-01-19 00:00 UTC
+				<div class="group relative">
+					<div class="absolute inset-0 bg-gradient-to-r from-green-500/20 to-green-600/20 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+					<div class="relative bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-sm border border-green-500/30 rounded-2xl p-8 shadow-2xl hover:shadow-green-500/20 transition-all duration-300">
+						<div class="flex flex-col lg:flex-row lg:items-center lg:gap-12">
+							<div class="lg:flex-1 space-y-6">
+								<!-- Date Badge -->
+								<div class="inline-flex items-center gap-3 bg-green-500/20 border border-green-500/30 rounded-full px-6 py-2">
+									<div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+									<span class="text-green-300 font-semibold text-lg tracking-wide">January 19, 2025</span>
+								</div>
+								
+								<!-- Title -->
+								<h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+									Ceasefire Agreement
+								</h2>
+								
+								<!-- Description -->
+								<p class="text-gray-300 text-xl leading-relaxed">
+									A new ceasefire agreement was reached, bringing hope for lasting peace.
 								</p>
-								<p class="text-gray-300 text-lg">
-									<span class="font-semibold">UNIX:</span> 1737244800
-								</p>
+								
+								<!-- Metadata -->
+								<div class="flex flex-wrap gap-6 text-sm text-gray-400">
+									<div class="flex items-center gap-2">
+										<span class="text-gray-500">🕐</span>
+										<span>00:00 UTC</span>
+									</div>
+									<div class="flex items-center gap-2">
+										<span class="text-gray-500">⚡</span>
+										<span class="font-mono">1737244800</span>
+									</div>
+								</div>
 							</div>
-							<p class="text-gray-200 text-lg leading-relaxed">
-								A new ceasefire agreement was reached, bringing hope for lasting peace.
-							</p>
-						</div>
-						<div class="mt-6 lg:mt-0 lg:w-1/3 lg:flex-shrink-0">
-							<div class="bg-black/50 rounded-lg p-4 text-center">
-								<div class="text-green-400 font-bold text-lg mb-2" id="label-5">TIME ELAPSED</div>
-								<div id="counter-5" class="text-2xl font-mono text-white">
-									<!-- Counter will be populated by JavaScript -->
+							
+							<!-- Counter Display -->
+							<div class="mt-8 lg:mt-0 lg:w-80 lg:flex-shrink-0">
+								<div class="bg-black/60 border border-green-500/30 rounded-xl p-6 text-center backdrop-blur-sm">
+									<div class="text-green-400 font-bold text-lg mb-3 tracking-wide" id="label-5">TIME ELAPSED</div>
+									<div id="counter-5" class="text-2xl lg:text-3xl font-mono text-white">
+										<!-- Counter will be populated by JavaScript -->
+									</div>
+									<div class="mt-3 text-sm text-gray-400">SINCE EVENT</div>
 								</div>
 							</div>
 						</div>
@@ -183,29 +278,48 @@ import '../styles/global.css';
 				</div>
 
 				<!-- Event 6: March 18, 2025 -->
-				<div class="bg-gradient-to-r from-gray-900 to-red-900 border-l-8 border-red-600 rounded-lg p-6 shadow-2xl">
-					<div class="flex flex-col lg:flex-row lg:items-start lg:gap-8">
-						<div class="lg:w-2/3 lg:pr-4">
-							<h2 class="text-2xl md:text-3xl font-bold text-red-400 mb-3">
-								💔 March 18, 2025 – Ceasefire Collapses
-							</h2>
-							<div class="space-y-2 mb-4">
-								<p class="text-gray-300 text-lg">
-									<span class="font-semibold">DateTime:</span> 2025-03-18 00:00 UTC
+				<div class="group relative">
+					<div class="absolute inset-0 bg-gradient-to-r from-red-500/20 to-red-600/20 rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+					<div class="relative bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-sm border border-red-500/30 rounded-2xl p-8 shadow-2xl hover:shadow-red-500/20 transition-all duration-300">
+						<div class="flex flex-col lg:flex-row lg:items-center lg:gap-12">
+							<div class="lg:flex-1 space-y-6">
+								<!-- Date Badge -->
+								<div class="inline-flex items-center gap-3 bg-red-500/20 border border-red-500/30 rounded-full px-6 py-2">
+									<div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+									<span class="text-red-300 font-semibold text-lg tracking-wide">March 18, 2025</span>
+								</div>
+								
+								<!-- Title -->
+								<h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+									Ceasefire Collapses
+								</h2>
+								
+								<!-- Description -->
+								<p class="text-gray-300 text-xl leading-relaxed">
+									The ceasefire agreement collapsed, demonstrating the fragility of peace in the region.
 								</p>
-								<p class="text-gray-300 text-lg">
-									<span class="font-semibold">UNIX:</span> 1742256000
-								</p>
+								
+								<!-- Metadata -->
+								<div class="flex flex-wrap gap-6 text-sm text-gray-400">
+									<div class="flex items-center gap-2">
+										<span class="text-gray-500">🕐</span>
+										<span>00:00 UTC</span>
+									</div>
+									<div class="flex items-center gap-2">
+										<span class="text-gray-500">⚡</span>
+										<span class="font-mono">1742256000</span>
+									</div>
+								</div>
 							</div>
-							<p class="text-gray-200 text-lg leading-relaxed">
-								The ceasefire agreement collapsed, demonstrating the fragility of peace in the region.
-							</p>
-						</div>
-						<div class="mt-6 lg:mt-0 lg:w-1/3 lg:flex-shrink-0">
-							<div class="bg-black/50 rounded-lg p-4 text-center">
-								<div class="text-red-400 font-bold text-lg mb-2" id="label-6">TIME ELAPSED</div>
-								<div id="counter-6" class="text-2xl font-mono text-white">
-									<!-- Counter will be populated by JavaScript -->
+							
+							<!-- Counter Display -->
+							<div class="mt-8 lg:mt-0 lg:w-80 lg:flex-shrink-0">
+								<div class="bg-black/60 border border-red-500/30 rounded-xl p-6 text-center backdrop-blur-sm">
+									<div class="text-red-400 font-bold text-lg mb-3 tracking-wide" id="label-6">TIME ELAPSED</div>
+									<div id="counter-6" class="text-2xl lg:text-3xl font-mono text-white">
+										<!-- Counter will be populated by JavaScript -->
+									</div>
+									<div class="mt-3 text-sm text-gray-400">SINCE EVENT</div>
 								</div>
 							</div>
 						</div>
