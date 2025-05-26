@@ -66,7 +66,7 @@ import '../styles/global.css';
 								
 								<!-- Title -->
 								<h2 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
-									Hamas Attack on Israel
+									Hamas Insurgence (al-Aqsa Flood)
 								</h2>
 								
 								<!-- Description -->
@@ -366,7 +366,7 @@ import '../styles/global.css';
 						</thead>
 						<tbody class="text-gray-200">
 							<tr class="border-b border-gray-700 hover:bg-gray-800/50">
-								<td class="py-3 px-4">Hamas Attack on Israel</td>
+								<td class="py-3 px-4">Hamas Insurgence (al-Aqsa Flood)</td>
 								<td class="py-3 px-4">2023-10-07 05:30</td>
 								<td class="py-3 px-4 font-mono">1696656600</td>
 								<td class="py-3 px-4">
@@ -430,6 +430,65 @@ import '../styles/global.css';
 				</div>
 			</div>
 
+			<!-- Humanitarian Organizations Support -->
+			<div class="mt-12 bg-gradient-to-br from-green-900/30 to-green-800/30 border border-green-500/40 rounded-xl p-8">
+				<div class="text-center mb-8">
+					<h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+						🤝 Support Palestinian Humanitarian Organizations
+					</h2>
+					<p class="text-xl text-gray-300 leading-relaxed max-w-4xl mx-auto">
+						Please consider donating directly to organizations providing critical humanitarian aid to Palestinians in need.
+					</p>
+				</div>
+
+				<div class="grid md:grid-cols-3 gap-6">
+					<!-- PCRF -->
+					<div class="bg-black/40 border border-green-500/30 rounded-lg p-6 hover:border-green-400/50 transition-colors">
+						<div class="text-center">
+							<div class="text-3xl mb-3">🏥</div>
+							<h3 class="text-xl font-bold text-white mb-2">Palestine Children's Relief Fund</h3>
+							<p class="text-gray-300 text-sm mb-4">Providing medical care and humanitarian relief to children throughout the Levant.</p>
+							<a href="https://www.pcrf.net/" target="_blank" rel="noopener noreferrer" 
+							   class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
+								Donate to PCRF →
+							</a>
+						</div>
+					</div>
+
+					<!-- Palestine Red Crescent -->
+					<div class="bg-black/40 border border-green-500/30 rounded-lg p-6 hover:border-green-400/50 transition-colors">
+						<div class="text-center">
+							<div class="text-3xl mb-3">🚑</div>
+							<h3 class="text-xl font-bold text-white mb-2">Palestine Red Crescent Society</h3>
+							<p class="text-gray-300 text-sm mb-4">Emergency medical services, disaster management, and humanitarian aid throughout Palestine.</p>
+							<a href="https://www.palestinercs.org/en" target="_blank" rel="noopener noreferrer" 
+							   class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
+								Donate to PRCS →
+							</a>
+						</div>
+					</div>
+
+					<!-- UNRWA -->
+					<div class="bg-black/40 border border-green-500/30 rounded-lg p-6 hover:border-green-400/50 transition-colors">
+						<div class="text-center">
+							<div class="text-3xl mb-3">🏠</div>
+							<h3 class="text-xl font-bold text-white mb-2">UNRWA</h3>
+							<p class="text-gray-300 text-sm mb-4">UN agency providing education, healthcare, and emergency aid to Palestinian refugees.</p>
+							<a href="https://donate.unrwa.org/int/en/general" target="_blank" rel="noopener noreferrer" 
+							   class="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
+								Donate to UNRWA →
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<div class="mt-8 text-center">
+					<p class="text-gray-400 text-sm">
+						These organizations provide direct humanitarian aid, medical care, and emergency relief to Palestinians affected by the ongoing crisis.
+					</p>
+				</div>
+			</div>
+
 			<!-- Solidarity Message -->
 			<div class="mt-12 text-center bg-gradient-to-r from-red-900 via-black to-green-900 border border-white/20 rounded-lg p-8">
 				<div class="text-4xl mb-4">🇵🇸</div>
@@ -442,26 +501,37 @@ import '../styles/global.css';
 				<div class="w-full h-4 bg-gradient-to-r from-red-600 via-white to-green-600 rounded-full"></div>
 			</div>
 
-			<!-- Donation Box -->
-			<div class="mt-12 flex justify-center">
-				<div class="relative group">
-					<div class="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 rounded-xl blur-sm opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
-					<div class="relative bg-black/60 border border-white/20 rounded-xl p-4 backdrop-blur-sm shadow-xl">
-						<div class="text-center mb-0">
-							<div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-5 py-2.5">
-								<span class="text-lg">💝</span>
-								<span class="text-white font-medium text-base tracking-wide">Support</span>
+			<!-- Site Support (Hidden by default) -->
+			<div class="mt-8 text-center">
+				<button id="toggleSiteSupport" class="text-gray-500 hover:text-gray-400 text-sm underline transition-colors">
+					Help cover website development & hosting costs
+				</button>
+			</div>
+
+			<div id="siteSupportSection" class="mt-4 hidden">
+				<div class="flex justify-center">
+					<div class="relative group">
+						<div class="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 rounded-xl blur-sm opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+						<div class="relative bg-black/60 border border-white/20 rounded-xl p-4 backdrop-blur-sm shadow-xl w-fit">
+							<div class="flex flex-col items-center mb-1">
+								<div class="inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-5 py-2.5 mb-2">
+									<span class="text-lg">⚙️</span>
+									<span class="text-white font-medium text-base tracking-wide">Site Development</span>
+								</div>
+								<p class="text-gray-400 text-xs mb-0.5 text-center">For website development & hosting costs only</p>
+								<p class="text-gray-500 text-xs text-center">Please prioritize the humanitarian organizations above</p>
 							</div>
-							<p class="text-gray-400 text-xs mb-1">Anonymous • Secure</p>
+							<div class="flex justify-center">
+								<iframe 
+									src="https://trocador.app/anonpay/?ticker_to=xmr&network_to=Mainnet&address=86Mt3EAG12gHteUHmqz3eZdtAWB6MQNrS1U3er4DNhddcSTjiHPU8fCNJx94T9P3yvf92QcU6TCweCh9T2KHiVcjHeX2mmh&donation=True&simple_mode=True&name=CCCP.PS&description=Donation+for+CCCP.PS&email=web@cccp.ps&bgcolor=" 
+									width="310" 
+									height="350" 
+									style="border:0; border-radius: 6px;" 
+									scrolling="no"
+									title="Cryptocurrency Donation"
+								></iframe>
+							</div>
 						</div>
-						<iframe 
-							src="https://trocador.app/anonpay/?ticker_to=xmr&network_to=Mainnet&address=86Mt3EAG12gHteUHmqz3eZdtAWB6MQNrS1U3er4DNhddcSTjiHPU8fCNJx94T9P3yvf92QcU6TCweCh9T2KHiVcjHeX2mmh&donation=True&simple_mode=True&name=CCCP.PS&description=Donation+for+CCCP.PS&email=web@cccp.ps&bgcolor=" 
-							width="310" 
-							height="350" 
-							style="border:0; border-radius: 6px;" 
-							scrolling="no"
-							title="Cryptocurrency Donation"
-						></iframe>
 					</div>
 				</div>
 			</div>
@@ -471,10 +541,10 @@ import '../styles/global.css';
 		<footer class="bg-black border-t border-red-600 py-8 mt-12">
 			<div class="max-w-6xl mx-auto px-4 text-center">
 				<p class="text-gray-400">
-					This tracker updates every second. All times are in UTC and have been verified through extensive research.
+					This tracker updates every second.
 				</p>
 				<p class="text-gray-500 mt-2">
-					Built with solidarity for Palestinian liberation. Sources verified from leftist, Marxist, and Palestine solidarity perspectives.
+					Built with solidarity for Palestinian liberation.
 				</p>
 			</div>
 		</footer>
@@ -483,7 +553,7 @@ import '../styles/global.css';
 		<script is:inline>
 			// Event timestamps (UNIX)
 			const events = [
-				{ id: 1, timestamp: 1696656600 }, // October 7, 2023 – Hamas Attack
+				{ id: 1, timestamp: 1696656600 }, // October 7, 2023 – Hamas Insurgence (Al-Aqsa Flood)
 				{ id: 2, timestamp: 1698434400 }, // October 27, 2023 – Ground Invasion
 				{ id: 3, timestamp: 1700805600 }, // November 24, 2023 – Ceasefire Begins
 				{ id: 4, timestamp: 1701403200 }, // December 1, 2023 – Ceasefire Ends
@@ -547,6 +617,26 @@ import '../styles/global.css';
 			// Update immediately and then every second
 			updateCounters();
 			setInterval(updateCounters, 1000);
+
+			// Toggle site support section
+			document.addEventListener('DOMContentLoaded', function() {
+				const toggleButton = document.getElementById('toggleSiteSupport');
+				const supportSection = document.getElementById('siteSupportSection');
+				
+				if (toggleButton && supportSection) {
+					toggleButton.addEventListener('click', function() {
+						const isHidden = supportSection.classList.contains('hidden');
+						
+						if (isHidden) {
+							supportSection.classList.remove('hidden');
+							toggleButton.textContent = 'Hide website support options';
+						} else {
+							supportSection.classList.add('hidden');
+							toggleButton.textContent = 'Help cover website development & hosting costs';
+						}
+					});
+				}
+			});
 		</script>
 	</body>
 </html>
