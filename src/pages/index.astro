@@ -3,6 +3,7 @@ import { getAllTimelines, getOngoingTimelines, getHistoricalTimelines } from '..
 import type { Timeline } from '../data/types';
 import TimelineNavigation from '../components/layout/TimelineNavigation.astro';
 import AccessibilitySkipLink from '../components/shared/AccessibilitySkipLink.astro';
+import HumanitarianSupport from '../components/support/HumanitarianSupport.astro';
 import '../styles/global.css';
 import '../styles/timeline-themes.css';
 
@@ -244,18 +245,8 @@ function getTimelineDuration(timeline: Timeline): string {
         </div>
       </section>
 
-      <!-- Support Section -->
-      <section class="mt-16 pt-16 border-t border-gray-800">
-        <div class="text-center">
-          <h2 class="text-2xl md:text-3xl font-bold mb-8 text-white">
-            🇵🇸 In Solidarity with the Palestinian People 🇵🇸
-          </h2>
-          <p class="text-gray-400 text-lg max-w-3xl mx-auto leading-relaxed">
-            This timeline collection serves as a comprehensive documentation of Palestinian resilience,
-            international solidarity, and the ongoing struggle for justice and human rights.
-          </p>
-        </div>
-      </section>
+      <!-- Humanitarian Support Section -->
+      <HumanitarianSupport />
     </main>
 
     <!-- Live Counter Script -->
