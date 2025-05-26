@@ -1,0 +1,331 @@
+---
+import { getAllTimelines, getTimelineByYear } from '../../data/timelines/index';
+import type { Timeline } from '../../data/types';
+import TimelineNavigation from '../../components/layout/TimelineNavigation.astro';
+import '../../styles/global.css';
+
+export async function getStaticPaths() {
+  const timelines = getAllTimelines();
+  return timelines.map((timeline: Timeline) => ({
+    params: { year: timeline.year.toString() },
+    props: { timeline }
+  }));
+}
+
+interface Props {
+  timeline: Timeline;
+}
+
+const { timeline } = Astro.props as Props;
+const { year } = Astro.params;
+
+// Validate timeline exists
+if (!timeline || !year) {
+  return Astro.redirect('/404');
+}
+
+// Function to format timestamp to readable date/time
+function formatTimestamp(timestamp: number, includeTime: boolean = false): string {
+  const date = new Date(timestamp * 1000);
+  const options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    ...(includeTime && { hour: '2-digit', minute: '2-digit', timeZoneName: 'short' })
+  };
+  return date.toLocaleDateString('en-US', options);
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{timeline.name} - CCCP.PS Timeline</title>
+    <meta name="description" content={`${timeline.name} - ${timeline.description}`} />
+    
+    <!-- Dynamic theme CSS variables -->
+    <style define:vars={{
+      primary: timeline.theme.primary,
+      secondary: timeline.theme.secondary || timeline.theme.primary,
+      gradientStart: timeline.theme.gradient[0],
+      gradientEnd: timeline.theme.gradient[1] || timeline.theme.gradient[0],
+      border: timeline.theme.border,
+      text: timeline.theme.text
+    }}>
+      :root {
+        --timeline-primary: var(--primary);
+        --timeline-secondary: var(--secondary);
+        --timeline-gradient-start: var(--gradientStart);
+        --timeline-gradient-end: var(--gradientEnd);
+        --timeline-border: var(--border);
+        --timeline-text: var(--text);
+      }
+      
+      .timeline-theme {
+        background: linear-gradient(135deg, var(--timeline-gradient-start), var(--timeline-gradient-end));
+      }
+      
+      .timeline-primary {
+        color: var(--timeline-primary);
+      }
+      
+      .timeline-border {
+        border-color: var(--timeline-border);
+      }
+      
+      .timeline-bg {
+        background-color: var(--timeline-primary);
+      }
+    </style>
+  </head>
+  
+  <body class="bg-black text-white font-mono antialiased">
+    <!-- Navigation -->
+    <TimelineNavigation />
+    
+    <!-- Hero Section -->
+    <header class="timeline-theme py-16 px-4 relative overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 opacity-10">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl"></div>
+      </div>
+      
+      <div class="max-w-6xl mx-auto relative z-10 text-center">
+        <!-- Timeline Title -->
+        <h1 class="text-5xl md:text-7xl font-black mb-6 text-white tracking-tight">
+          {timeline.name}
+        </h1>
+        
+        <!-- Status Badge -->
+        <div class="inline-flex items-center gap-3 bg-black/30 border border-white/20 rounded-full px-6 py-3 mb-6">
+          {timeline.status === 'ongoing' && (
+            <>
+              <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+              <span class="text-white font-semibold text-lg">ONGOING</span>
+            </>
+          )}
+          {timeline.status === 'historical' && (
+            <>
+              <div class="w-3 h-3 bg-gray-400 rounded-full"></div>
+              <span class="text-white font-semibold text-lg">HISTORICAL</span>
+            </>
+          )}
+        </div>
+        
+        <!-- Description -->
+        <p class="text-xl md:text-2xl text-white/90 max-w-4xl mx-auto leading-relaxed mb-8">
+          {timeline.description}
+        </p>
+        
+        <!-- Timeline Stats -->
+        <div class="flex flex-wrap justify-center gap-8 text-white/80">
+          <div class="text-center">
+            <div class="text-2xl font-bold">{timeline.stats.totalEvents}</div>
+            <div class="text-sm uppercase tracking-wide">Events</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold">
+              {timeline.status === 'ongoing' ? 
+                `${Math.floor((Date.now() - timeline.startTimestamp * 1000) / (1000 * 60 * 60 * 24))}` :
+                `${Math.floor((timeline.stats.duration) / (60 * 60 * 24))}`
+              }
+            </div>
+            <div class="text-sm uppercase tracking-wide">Days</div>
+          </div>
+          {timeline.context && (
+            <div class="text-center">
+              <div class="text-2xl font-bold">{formatTimestamp(timeline.startTimestamp).split(' ')[2]}</div>
+              <div class="text-sm uppercase tracking-wide">Started</div>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-12">
+      <!-- Context Section -->
+      {timeline.context && (
+        <div class="mb-12 p-8 bg-gray-900/50 border timeline-border rounded-2xl">
+          <h2 class="text-2xl font-bold mb-4 timeline-primary">Historical Context</h2>
+          <p class="text-gray-300 leading-relaxed text-lg">{timeline.context}</p>
+        </div>
+      )}
+      
+      <!-- Events Timeline -->
+      <div class="space-y-12">
+        <h2 class="text-3xl font-bold text-center mb-12 timeline-primary">Timeline of Events</h2>
+        
+        {timeline.events.map((event) => (
+          <div class="group relative">
+            <div class="absolute inset-0 timeline-bg opacity-10 rounded-2xl blur-xl group-hover:opacity-20 transition-opacity duration-300"></div>
+            <div class="relative bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-sm border timeline-border rounded-2xl p-8 shadow-2xl transition-all duration-300">
+              <div class="flex flex-col lg:flex-row lg:items-start lg:gap-12">
+                <div class="lg:flex-1 space-y-6">
+                  <!-- Date Badge -->
+                  <div class="inline-flex items-center gap-3 timeline-bg bg-opacity-20 border timeline-border rounded-full px-6 py-2">
+                    <div class="w-3 h-3 timeline-bg rounded-full animate-pulse"></div>
+                    <span class="timeline-primary font-semibold text-lg tracking-wide">
+                      {event.dateString}
+                      {event.timeString && ` • ${event.timeString}`}
+                    </span>
+                  </div>
+                  
+                  <!-- Event Title -->
+                  <h3 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+                    {event.title}
+                  </h3>
+                  
+                  <!-- Event Description -->
+                  <p class="text-gray-300 text-xl leading-relaxed">
+                    {event.description}
+                  </p>
+                  
+                  <!-- Event Category & Significance -->
+                  <div class="flex flex-wrap gap-4">
+                    <span class="px-3 py-1 bg-gray-700/50 border border-gray-600 rounded-full text-sm uppercase tracking-wide">
+                      {event.category}
+                    </span>
+                    <span class={`px-3 py-1 rounded-full text-sm uppercase tracking-wide ${
+                      event.significance === 'critical' ? 'bg-red-500/20 border border-red-500/30 text-red-300' :
+                      event.significance === 'major' ? 'bg-orange-500/20 border border-orange-500/30 text-orange-300' :
+                      event.significance === 'moderate' ? 'bg-yellow-500/20 border border-yellow-500/30 text-yellow-300' :
+                      'bg-gray-500/20 border border-gray-500/30 text-gray-300'
+                    }`}>
+                      {event.significance}
+                    </span>
+                  </div>
+                  
+                  <!-- Casualties (if available) -->
+                  {event.casualties && (
+                    <div class="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+                      <h4 class="text-red-300 font-semibold mb-2">Casualties</h4>
+                      <div class="grid grid-cols-2 gap-4 text-sm">
+                        {event.casualties.palestinian && (
+                          <div>
+                            <span class="text-gray-400">Palestinian:</span>
+                            <span class="text-red-300 font-semibold ml-2">{event.casualties.palestinian}</span>
+                          </div>
+                        )}
+                        {event.casualties.israeli && (
+                          <div>
+                            <span class="text-gray-400">Israeli:</span>
+                            <span class="text-red-300 font-semibold ml-2">{event.casualties.israeli}</span>
+                          </div>
+                        )}
+                        {event.casualties.injured && (
+                          <div>
+                            <span class="text-gray-400">Injured:</span>
+                            <span class="text-yellow-300 font-semibold ml-2">{event.casualties.injured}</span>
+                          </div>
+                        )}
+                      </div>
+                      {event.casualties.notes && (
+                        <p class="text-gray-400 text-sm mt-2">{event.casualties.notes}</p>
+                      )}
+                    </div>
+                  )}
+                  
+                  <!-- Sources -->
+                  <div class="space-y-2">
+                    <h4 class="text-gray-400 font-semibold">Sources:</h4>
+                    <div class="flex flex-wrap gap-2">
+                      {event.sources.map((source) => (
+                        <a href={source.url} 
+                           target="_blank" 
+                           rel="noopener noreferrer"
+                           class="inline-flex items-center gap-2 px-3 py-1 bg-gray-800/50 border border-gray-600 rounded-full text-sm text-gray-300 hover:text-white hover:bg-gray-700/50 transition-colors duration-200">
+                          <span>{source.name}</span>
+                          <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M12.586 4.586a2 2 0 112.828 2.828l-3 3a2 2 0 01-2.828 0 1 1 0 00-1.414 1.414 4 4 0 005.656 0l3-3a4 4 0 00-5.656-5.656l-1.5 1.5a1 1 0 101.414 1.414l1.5-1.5zm-5 5a2 2 0 012.828 0 1 1 0 101.414-1.414 4 4 0 00-5.656 0l-3 3a4 4 0 105.656 5.656l1.5-1.5a1 1 0 10-1.414-1.414l-1.5 1.5a2 2 0 11-2.828-2.828l3-3z" clip-rule="evenodd"></path>
+                          </svg>
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Counter Display -->
+                <div class="mt-8 lg:mt-0 lg:w-80 lg:flex-shrink-0">
+                  <div class="bg-black/60 border timeline-border rounded-xl p-6 text-center backdrop-blur-sm">
+                    <div class="timeline-primary font-bold text-lg mb-3 tracking-wide">
+                      {timeline.status === 'ongoing' ? 'TIME ELAPSED' : 'TIME SINCE'}
+                    </div>
+                    <div 
+                      class="counter text-2xl lg:text-3xl font-mono text-white"
+                      data-timestamp={event.timestamp}
+                      data-type={timeline.status === 'ongoing' ? 'ongoing' : 'historical'}>
+                      <!-- Counter will be populated by JavaScript -->
+                    </div>
+                    <div class="mt-3 text-sm text-gray-400">SINCE EVENT</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </main>
+
+    <!-- Back to Overview -->
+    <div class="text-center py-12">
+      <a href="/" 
+         class="inline-flex items-center gap-2 px-6 py-3 timeline-bg bg-opacity-20 border timeline-border rounded-lg text-white hover:bg-opacity-30 transition-all duration-200">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+        </svg>
+        Back to Timeline Overview
+      </a>
+    </div>
+
+    <!-- Counter Script -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const counters = document.querySelectorAll('.counter');
+        
+        function updateCounters() {
+          const now = Math.floor(Date.now() / 1000);
+          
+          counters.forEach(counter => {
+            const element = counter as HTMLElement;
+            const timestamp = parseInt(element.dataset.timestamp || '0');
+            const type = element.dataset.type || 'ongoing';
+            const diff = now - timestamp;
+            
+            if (type === 'ongoing') {
+              // For ongoing events, show elapsed time
+              const days = Math.floor(diff / 86400);
+              const hours = Math.floor((diff % 86400) / 3600);
+              const minutes = Math.floor((diff % 3600) / 60);
+              const seconds = diff % 60;
+              
+              counter.innerHTML = `
+                <div class="text-3xl font-bold">${days}</div>
+                <div class="text-sm opacity-70">days</div>
+                <div class="text-lg">${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>
+              `;
+            } else {
+              // For historical events, show years since
+              const years = Math.floor(diff / (365.25 * 86400));
+              const months = Math.floor((diff % (365.25 * 86400)) / (30.44 * 86400));
+              
+              counter.innerHTML = `
+                <div class="text-3xl font-bold">${years}</div>
+                <div class="text-sm opacity-70">years</div>
+                <div class="text-lg">${months} months ago</div>
+              `;
+            }
+          });
+        }
+        
+        // Update immediately and then every second
+        updateCounters();
+        setInterval(updateCounters, 1000);
+      });
+    </script>
+  </body>
+</html> 
