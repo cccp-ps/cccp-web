@@ -72,6 +72,10 @@ export interface TimelineEvent {
   casualties?: CasualtyData;
   /** Additional metadata */
   metadata?: Record<string, any>;
+  /** Connections to other timeline events */
+  connections?: TimelineConnection[];
+  /** Keywords for enhanced search */
+  keywords?: string[];
 }
 
 export interface TimelineTheme {
@@ -98,6 +102,55 @@ export interface TimelineStats {
   endTimestamp?: number;
   /** Key statistical outcomes */
   keyOutcomes?: string[];
+  /** Event breakdown by category */
+  eventsByCategory?: Record<EventCategory, number>;
+  /** Event breakdown by significance */
+  eventsBySignificance?: Record<SignificanceLevel, number>;
+  /** Total casualties if applicable */
+  totalCasualties?: {
+    palestinian?: number;
+    israeli?: number;
+    injured?: number;
+    civilian?: number;
+  };
+  /** Notable achievements or milestones */
+  achievements?: string[];
+  /** Major humanitarian impacts */
+  humanitarianImpacts?: string[];
+}
+
+export interface FilterOptions {
+  /** Categories to include */
+  categories?: EventCategory[];
+  /** Significance levels to include */
+  significance?: SignificanceLevel[];
+  /** Date range filter */
+  dateRange?: {
+    start: number;
+    end: number;
+  };
+  /** Source types to include */
+  sourceTypes?: SourceType[];
+}
+
+export interface SearchOptions {
+  /** Search query text */
+  query: string;
+  /** Fields to search in */
+  fields?: ('title' | 'description' | 'sources')[];
+  /** Case sensitive search */
+  caseSensitive?: boolean;
+}
+
+export interface TimelineConnection {
+  /** ID of the connected timeline */
+  timelineId: string;
+  /** ID of the connected event */
+  eventId: string;
+  /** Description of the connection */
+  description: string;
+  /** Type of connection */
+  type: 'caused_by' | 'leads_to' | 'related' | 'precursor' | 'consequence';
 }
 
 export interface Timeline {

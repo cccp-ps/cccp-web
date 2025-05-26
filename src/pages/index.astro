@@ -2,6 +2,7 @@
 import { getAllTimelines, getOngoingTimelines, getHistoricalTimelines } from '../data/timelines/index';
 import type { Timeline } from '../data/types';
 import TimelineNavigation from '../components/layout/TimelineNavigation.astro';
+import AccessibilitySkipLink from '../components/shared/AccessibilitySkipLink.astro';
 import '../styles/global.css';
 import '../styles/timeline-themes.css';
 
@@ -34,6 +35,9 @@ function getTimelineDuration(timeline: Timeline): string {
   </head>
 
   <body class="bg-black text-white font-mono antialiased">
+    <!-- Accessibility Skip Link -->
+    <AccessibilitySkipLink />
+    
     <!-- Navigation -->
     <TimelineNavigation />
 
@@ -87,7 +91,7 @@ function getTimelineDuration(timeline: Timeline): string {
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 py-12">
+    <main id="main-content" class="max-w-7xl mx-auto px-4 py-12" role="main" aria-label="Timeline overview">
 
       <!-- Featured Timeline Section -->
       {featuredTimeline && (

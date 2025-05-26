@@ -1,0 +1,145 @@
+---
+import type { Timeline, TimelineConnection } from '../../data/types';
+import { getAllTimelines } from '../../data/timelines/index';
+
+interface Props {
+  timeline: Timeline;
+}
+
+const { timeline } = Astro.props;
+const allTimelines = getAllTimelines();
+
+// Find events with connections
+const eventsWithConnections = timeline.events.filter(event => 
+  event.connections && event.connections.length > 0
+);
+
+// Helper function to get connected event details
+function getConnectedEventDetails(connection: TimelineConnection) {
+  const connectedTimeline = allTimelines.find(t => t.id === connection.timelineId);
+  if (!connectedTimeline) return null;
+  
+  const connectedEvent = connectedTimeline.events.find(e => e.id === connection.eventId);
+  if (!connectedEvent) return null;
+  
+  return {
+    timeline: connectedTimeline,
+    event: connectedEvent
+  };
+}
+
+// Helper function to get connection type styling
+function getConnectionTypeStyle(type: TimelineConnection['type']) {
+  switch (type) {
+    case 'caused_by':
+      return 'bg-red-500/20 border-red-500/30 text-red-300';
+    case 'leads_to':
+      return 'bg-blue-500/20 border-blue-500/30 text-blue-300';
+    case 'related':
+      return 'bg-purple-500/20 border-purple-500/30 text-purple-300';
+    case 'precursor':
+      return 'bg-orange-500/20 border-orange-500/30 text-orange-300';
+    case 'consequence':
+      return 'bg-green-500/20 border-green-500/30 text-green-300';
+    default:
+      return 'bg-gray-500/20 border-gray-500/30 text-gray-300';
+  }
+}
+
+// Helper function to get connection type icon
+function getConnectionTypeIcon(type: TimelineConnection['type']) {
+  switch (type) {
+    case 'caused_by':
+      return '←';
+    case 'leads_to':
+      return '→';
+    case 'related':
+      return '↔';
+    case 'precursor':
+      return '↗';
+    case 'consequence':
+      return '↘';
+    default:
+      return '•';
+  }
+}
+---
+
+{eventsWithConnections.length > 0 && (
+  <div class="mb-12 space-y-8">
+    <h2 class="text-3xl font-bold text-center timeline-primary mb-8">Event Connections</h2>
+    
+    <div class="space-y-6">
+      {eventsWithConnections.map((event) => (
+        <div class="bg-gradient-to-br from-gray-900 to-black border timeline-border rounded-xl p-6">
+          <!-- Source Event -->
+          <div class="mb-6">
+            <h3 class="text-xl font-bold text-white mb-2">{event.title}</h3>
+            <p class="text-gray-400 text-sm">{event.dateString} • {timeline.name}</p>
+          </div>
+          
+          <!-- Connections -->
+          <div class="space-y-4">
+            <h4 class="text-lg font-semibold text-gray-300 mb-4">Connected Events:</h4>
+            
+            {event.connections?.map((connection) => {
+              const connectedDetails = getConnectedEventDetails(connection);
+              if (!connectedDetails) return null;
+              
+              return (
+                <div class="flex items-start gap-4 p-4 bg-gray-800/50 border border-gray-700 rounded-lg">
+                  <!-- Connection Type Badge -->
+                  <div class={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${getConnectionTypeStyle(connection.type)}`}>
+                    <span class="text-lg">{getConnectionTypeIcon(connection.type)}</span>
+                    <span class="capitalize">{connection.type.replace('_', ' ')}</span>
+                  </div>
+                  
+                  <!-- Connected Event Details -->
+                  <div class="flex-1">
+                    <div class="flex items-start justify-between gap-4">
+                      <div class="flex-1">
+                        <h5 class="text-lg font-semibold text-white mb-1">
+                          {connectedDetails.event.title}
+                        </h5>
+                        <p class="text-gray-400 text-sm mb-2">
+                          {connectedDetails.event.dateString} • {connectedDetails.timeline.name}
+                        </p>
+                        <p class="text-gray-300 text-sm leading-relaxed">
+                          {connection.description}
+                        </p>
+                      </div>
+                      
+                      <!-- Link to Connected Timeline -->
+                      <a 
+                        href={`/timeline/${connectedDetails.timeline.year}`}
+                        class="flex items-center gap-2 px-3 py-1 bg-blue-500/20 border border-blue-500/30 rounded-lg text-blue-300 hover:bg-blue-500/30 transition-colors duration-200 text-sm"
+                      >
+                        <span>View Timeline</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                        </svg>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+    
+    <!-- Timeline Comparison Link -->
+    <div class="text-center">
+      <a 
+        href="/timeline-comparison" 
+        class="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500/20 to-purple-500/20 border border-blue-500/30 rounded-lg text-white hover:from-blue-500/30 hover:to-purple-500/30 transition-all duration-200"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        <span>Compare All Timelines</span>
+      </a>
+    </div>
+  </div>
+)} 

@@ -2,6 +2,13 @@
 import { getAllTimelines, getTimelineByYear } from '../../data/timelines/index';
 import type { Timeline } from '../../data/types';
 import TimelineNavigation from '../../components/layout/TimelineNavigation.astro';
+import TimelineStats from '../../components/timeline/TimelineStats.astro';
+import KeyOutcomes from '../../components/timeline/KeyOutcomes.astro';
+import TimelineFilter from '../../components/timeline/TimelineFilter.astro';
+import TimelineSearch from '../../components/timeline/TimelineSearch.astro';
+import TimelineConnections from '../../components/timeline/TimelineConnections.astro';
+import AccessibilitySkipLink from '../../components/shared/AccessibilitySkipLink.astro';
+import LiveRegion from '../../components/shared/LiveRegion.astro';
 import '../../styles/global.css';
 
 export async function getStaticPaths() {
@@ -46,6 +53,19 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
     <title>{timeline.name} - CCCP.PS Timeline</title>
     <meta name="description" content={`${timeline.name} - ${timeline.description}`} />
     
+    <!-- Enhanced SEO and Accessibility Meta Tags -->
+    <meta name="keywords" content={`Palestine, solidarity, timeline, ${timeline.year}, ${timeline.name}, Palestinian liberation`} />
+    <meta name="author" content="CCCP.PS" />
+    <meta property="og:title" content={`${timeline.name} - CCCP.PS Timeline`} />
+    <meta property="og:description" content={timeline.description} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={`${timeline.name} - CCCP.PS Timeline`} />
+    <meta name="twitter:description" content={timeline.description} />
+    
+    <!-- Accessibility Language Declaration -->
+    <meta name="language" content="en-US" />
+    
     <!-- Dynamic theme CSS variables -->
     <style define:vars={{
       primary: timeline.theme.primary,
@@ -83,6 +103,13 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
   </head>
   
   <body class="bg-black text-white font-mono antialiased">
+    <!-- Accessibility Skip Link -->
+    <AccessibilitySkipLink />
+    
+    <!-- ARIA Live Region for Announcements -->
+    <LiveRegion id="search-announcements" />
+    <LiveRegion id="filter-announcements" />
+    
     <!-- Navigation -->
     <TimelineNavigation />
     
@@ -147,7 +174,7 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-7xl mx-auto px-4 py-12">
+    <main id="main-content" class="max-w-7xl mx-auto px-4 py-12" role="main" aria-label={`${timeline.name} timeline`}>
       <!-- Context Section -->
       {timeline.context && (
         <div class="mb-12 p-8 bg-gray-900/50 border timeline-border rounded-2xl">
@@ -155,15 +182,44 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
           <p class="text-gray-300 leading-relaxed text-lg">{timeline.context}</p>
         </div>
       )}
+
+      <!-- Timeline Statistics -->
+      <TimelineStats timeline={timeline} />
+
+      <!-- Key Outcomes -->
+      <KeyOutcomes timeline={timeline} />
+
+      <!-- Timeline Connections -->
+      <TimelineConnections timeline={timeline} />
+
+      <!-- Search and Filter Controls -->
+      <div class="mb-12 space-y-6">
+        <TimelineSearch timeline={timeline} />
+        <TimelineFilter timeline={timeline} />
+      </div>
       
       <!-- Events Timeline -->
-      <div class="space-y-12">
-        <h2 class="text-3xl font-bold text-center mb-12 timeline-primary">Timeline of Events</h2>
+      <section class="space-y-12" role="region" aria-label="Timeline events" aria-describedby="timeline-description">
+        <h2 id="timeline-events-heading" class="text-3xl font-bold text-center mb-12 timeline-primary">Timeline of Events</h2>
+        <div id="timeline-description" class="sr-only">
+          A chronological list of {timeline.stats.totalEvents} documented events from {timeline.name}. Use the search and filter controls above to narrow results.
+        </div>
         
-        {timeline.events.map((event) => (
-          <div class="group relative">
-            <div class="absolute inset-0 timeline-bg opacity-10 rounded-2xl blur-xl group-hover:opacity-20 transition-opacity duration-300"></div>
-            <div class="relative bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-sm border timeline-border rounded-2xl p-8 shadow-2xl transition-all duration-300">
+                  {timeline.events.map((event) => (
+            <article class="group relative"
+                     role="article"
+                     aria-labelledby={`event-title-${event.id}`}
+                     aria-describedby={`event-description-${event.id}`}
+                     data-event-id={event.id}
+                     data-event-title={event.title}
+                     data-event-description={event.description}
+                     data-event-category={event.category}
+                     data-event-significance={event.significance}
+                     data-event-timestamp={event.timestamp}
+                     data-event-sources={event.sources.map(s => s.type).join(',')}
+                     data-event-source-names={event.sources.map(s => s.name).join(', ')}>
+              <div class="absolute inset-0 timeline-bg opacity-10 rounded-2xl blur-xl group-hover:opacity-20 transition-opacity duration-300"></div>
+              <div class="relative bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-sm border timeline-border rounded-2xl p-8 shadow-2xl transition-all duration-300">
               <div class="flex flex-col lg:flex-row lg:items-start lg:gap-12">
                 <div class="lg:flex-1 space-y-6">
                   <!-- Date Badge -->
@@ -176,12 +232,12 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
                   </div>
                   
                   <!-- Event Title -->
-                  <h3 class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
+                  <h3 id={`event-title-${event.id}`} class="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
                     {event.title}
                   </h3>
                   
                   <!-- Event Description -->
-                  <p class="text-gray-300 text-xl leading-relaxed">
+                  <p id={`event-description-${event.id}`} class="text-gray-300 text-xl leading-relaxed">
                     {event.description}
                   </p>
                   
@@ -251,14 +307,18 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
                 
                 <!-- Counter Display -->
                 <div class="mt-8 lg:mt-0 lg:w-80 lg:flex-shrink-0">
-                  <div class="bg-black/60 border timeline-border rounded-xl p-6 text-center backdrop-blur-sm">
+                  <div class="bg-black/60 border timeline-border rounded-xl p-6 text-center backdrop-blur-sm" 
+                       role="timer" 
+                       aria-label={`Time ${timeline.status === 'ongoing' ? 'elapsed' : 'since'} ${event.title}`}>
                     <div class="timeline-primary font-bold text-lg mb-3 tracking-wide">
                       {timeline.status === 'ongoing' ? 'TIME ELAPSED' : 'TIME SINCE'}
                     </div>
                     <div 
                       class="counter text-2xl lg:text-3xl font-mono text-white"
                       data-timestamp={event.timestamp}
-                      data-type={timeline.status === 'ongoing' ? 'ongoing' : 'historical'}>
+                      data-type={timeline.status === 'ongoing' ? 'ongoing' : 'historical'}
+                      aria-live="polite"
+                      aria-atomic="true">
                       <!-- Counter will be populated by JavaScript -->
                     </div>
                     <div class="mt-3 text-sm text-gray-400">SINCE EVENT</div>
@@ -266,9 +326,9 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
                 </div>
               </div>
             </div>
-          </div>
+          </article>
         ))}
-      </div>
+      </section>
     </main>
 
     <!-- Back to Overview -->
@@ -282,13 +342,16 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
       </a>
     </div>
 
-    <!-- Counter Script -->
+    <!-- Counter Script with Accessibility Enhancements -->
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const counters = document.querySelectorAll('.counter');
+        let lastAnnouncementTime = 0;
+        const ANNOUNCEMENT_INTERVAL = 60000; // Announce every minute for ongoing timers
         
         function updateCounters() {
           const now = Math.floor(Date.now() / 1000);
+          const currentTime = Date.now();
           
           counters.forEach(counter => {
             if (!(counter instanceof HTMLElement)) return;
@@ -303,24 +366,97 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
               const minutes = Math.floor((diff % 3600) / 60);
               const seconds = diff % 60;
               
+              const timeText = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds elapsed`;
+              
               counter.innerHTML = `
-                <div class="text-3xl font-bold">${days}</div>
-                <div class="text-sm opacity-70">days</div>
-                <div class="text-lg">${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>
+                <div class="text-3xl font-bold" aria-hidden="true">${days}</div>
+                <div class="text-sm opacity-70" aria-hidden="true">days</div>
+                <div class="text-lg" aria-hidden="true">${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>
+                <span class="sr-only">${timeText}</span>
               `;
+              
+              // Announce to screen readers periodically for ongoing events
+              if (currentTime - lastAnnouncementTime > ANNOUNCEMENT_INTERVAL) {
+                announceToScreenReader(`${days} days have elapsed since this event`);
+                lastAnnouncementTime = currentTime;
+              }
             } else {
               // For historical events, show years since
               const years = Math.floor(diff / (365.25 * 86400));
               const months = Math.floor((diff % (365.25 * 86400)) / (30.44 * 86400));
               
+              const timeText = `${years} years and ${months} months since this event`;
+              
               counter.innerHTML = `
-                <div class="text-3xl font-bold">${years}</div>
-                <div class="text-sm opacity-70">years</div>
-                <div class="text-lg">${months} months ago</div>
+                <div class="text-3xl font-bold" aria-hidden="true">${years}</div>
+                <div class="text-sm opacity-70" aria-hidden="true">years</div>
+                <div class="text-lg" aria-hidden="true">${months} months ago</div>
+                <span class="sr-only">${timeText}</span>
               `;
             }
           });
         }
+        
+        // Function to announce to screen readers
+        function announceToScreenReader(message: string): void {
+          const liveRegion = document.getElementById('search-announcements');
+          if (liveRegion) {
+            liveRegion.textContent = message;
+            // Clear after a short delay to allow for re-announcements
+            setTimeout(() => {
+              liveRegion.textContent = '';
+            }, 1000);
+          }
+        }
+        
+        // Keyboard navigation support
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            // Clear search and filters on Escape
+            const searchInput = document.getElementById('search-input') as HTMLInputElement;
+            const clearFiltersBtn = document.getElementById('clear-filters') as HTMLButtonElement;
+            
+            if (searchInput && searchInput.value) {
+              searchInput.value = '';
+              searchInput.dispatchEvent(new Event('input'));
+              announceToScreenReader('Search cleared');
+            } else if (clearFiltersBtn) {
+              clearFiltersBtn.click();
+              announceToScreenReader('All filters cleared');
+            }
+          }
+        });
+        
+        // Add focus visible styles
+        const style = document.createElement('style');
+        style.textContent = `
+          .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+          }
+          
+          *:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+          }
+          
+          button:focus-visible,
+          a:focus-visible,
+          input:focus-visible,
+          select:focus-visible,
+          textarea:focus-visible {
+            outline: 2px solid #3b82f6;
+            outline-offset: 2px;
+          }
+        `;
+        document.head.appendChild(style);
         
         // Update immediately and then every second
         updateCounters();

@@ -1,0 +1,33 @@
+---
+interface Props {
+  id?: string;
+  polite?: boolean;
+  className?: string;
+}
+
+const { id = "live-region", polite = true, className = "" } = Astro.props;
+---
+
+<!-- ARIA Live Region for Dynamic Content Announcements -->
+<div 
+  id={id}
+  aria-live={polite ? "polite" : "assertive"}
+  aria-atomic="true"
+  class={`sr-only ${className}`}
+  role="status">
+  <!-- Dynamic announcements will be populated here by JavaScript -->
+</div>
+
+<style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style> 

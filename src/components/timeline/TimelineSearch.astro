@@ -1,0 +1,366 @@
+---
+import type { Timeline } from '../../data/types';
+
+interface Props {
+  timeline: Timeline;
+}
+
+const { timeline } = Astro.props;
+---
+
+<div class="mb-8 bg-gradient-to-br from-gray-900 to-black border timeline-border rounded-xl p-6">
+  <div class="flex items-center justify-between mb-6">
+    <h3 class="text-xl font-bold timeline-primary">Search Events</h3>
+    <div class="flex items-center gap-2 text-sm text-gray-400">
+      <span id="search-count">{timeline.stats.totalEvents} results</span>
+    </div>
+  </div>
+  
+  <div class="space-y-4">
+    <!-- Search Input -->
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+      <input 
+        type="text" 
+        id="search-input"
+        class="w-full pl-10 pr-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+        placeholder="Search events, descriptions, sources..."
+        autocomplete="off"
+      />
+      <button 
+        id="clear-search"
+        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors duration-200"
+        style="display: none;"
+      >
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Search Options -->
+    <div class="flex flex-wrap items-center gap-4 text-sm">
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input 
+          type="checkbox" 
+          id="search-titles"
+          class="rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-2"
+          checked
+        />
+        <span class="text-gray-300">Search titles</span>
+      </label>
+      
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input 
+          type="checkbox" 
+          id="search-descriptions"
+          class="rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-2"
+          checked
+        />
+        <span class="text-gray-300">Search descriptions</span>
+      </label>
+      
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input 
+          type="checkbox" 
+          id="search-sources"
+          class="rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-2"
+        />
+        <span class="text-gray-300">Search sources</span>
+      </label>
+      
+      <label class="flex items-center gap-2 cursor-pointer">
+        <input 
+          type="checkbox" 
+          id="case-sensitive"
+          class="rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-2"
+        />
+        <span class="text-gray-300">Case sensitive</span>
+      </label>
+    </div>
+    
+    <!-- Search Suggestions -->
+    <div id="search-suggestions" class="hidden">
+      <div class="text-sm text-gray-400 mb-2">Search suggestions:</div>
+      <div class="flex flex-wrap gap-2" id="suggestions-container">
+        <!-- Populated by JavaScript -->
+      </div>
+    </div>
+    
+    <!-- Search Results Summary -->
+    <div id="search-results-summary" class="hidden p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+      <div class="flex items-center gap-2 text-blue-300">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <span id="results-text">Search results</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ totalEvents: timeline.stats.totalEvents }}>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('search-input');
+    const clearSearchBtn = document.getElementById('clear-search');
+    const searchTitlesCheckbox = document.getElementById('search-titles');
+    const searchDescriptionsCheckbox = document.getElementById('search-descriptions');
+    const searchSourcesCheckbox = document.getElementById('search-sources');
+    const caseSensitiveCheckbox = document.getElementById('case-sensitive');
+    const searchCount = document.getElementById('search-count');
+    const searchSuggestions = document.getElementById('search-suggestions');
+    const suggestionsContainer = document.getElementById('suggestions-container');
+    const searchResultsSummary = document.getElementById('search-results-summary');
+    const resultsText = document.getElementById('results-text');
+    
+    let searchTimeout;
+    
+    // Generate search suggestions from timeline data
+    const suggestions = generateSearchSuggestions();
+    
+    function generateSearchSuggestions() {
+      const suggestions = new Set();
+      
+      // Add common terms
+      suggestions.add('ceasefire');
+      suggestions.add('humanitarian');
+      suggestions.add('conflict');
+      suggestions.add('displacement');
+      suggestions.add('political');
+      
+      // Add years
+      const currentYear = new Date().getFullYear();
+      for (let year = 1948; year <= currentYear; year++) {
+        suggestions.add(year.toString());
+      }
+      
+      return Array.from(suggestions).slice(0, 10);
+    }
+    
+    // Populate suggestions
+    if (suggestionsContainer) {
+      suggestionsContainer.innerHTML = suggestions.map(suggestion => 
+        `<button class="suggestion-tag px-3 py-1 bg-gray-700/50 border border-gray-600 rounded-full text-sm text-gray-300 hover:text-white hover:bg-gray-600/50 transition-colors duration-200" data-suggestion="${suggestion}">${suggestion}</button>`
+      ).join('');
+      
+      // Add click handlers to suggestions
+      document.querySelectorAll('.suggestion-tag').forEach(tag => {
+        tag.addEventListener('click', (e) => {
+          const suggestion = e.target.dataset.suggestion;
+          if (searchInput && suggestion) {
+            searchInput.value = suggestion;
+            performSearch();
+          }
+        });
+      });
+    }
+    
+    // Perform search
+    function performSearch() {
+      const query = searchInput?.value.trim() || '';
+      const searchTitles = searchTitlesCheckbox?.checked || false;
+      const searchDescriptions = searchDescriptionsCheckbox?.checked || false;
+      const searchSources = searchSourcesCheckbox?.checked || false;
+      const caseSensitive = caseSensitiveCheckbox?.checked || false;
+      
+      // Show/hide clear button
+      if (clearSearchBtn) {
+        clearSearchBtn.style.display = query ? 'flex' : 'none';
+      }
+      
+      // Show/hide suggestions
+      if (searchSuggestions) {
+        searchSuggestions.style.display = query ? 'none' : 'block';
+      }
+      
+      if (!query) {
+        showAllEvents();
+        updateSearchCount(-1);
+        hideSearchResults();
+        return;
+      }
+      
+      const searchRegex = new RegExp(caseSensitive ? query : query.toLowerCase(), 'g');
+      const eventCards = document.querySelectorAll('[data-event-id]');
+      let visibleCount = 0;
+      let matchedEvents = [];
+      
+      eventCards.forEach(card => {
+        const eventElement = card;
+        const eventTitle = eventElement.dataset.eventTitle || '';
+        const eventDescription = eventElement.dataset.eventDescription || '';
+        const eventSources = eventElement.dataset.eventSourceNames || '';
+        
+        let shouldShow = false;
+        let matchedField = '';
+        
+        // Check title
+        if (searchTitles) {
+          const titleText = caseSensitive ? eventTitle : eventTitle.toLowerCase();
+          if (titleText.includes(caseSensitive ? query : query.toLowerCase())) {
+            shouldShow = true;
+            matchedField = 'title';
+          }
+        }
+        
+        // Check description
+        if (searchDescriptions && !shouldShow) {
+          const descText = caseSensitive ? eventDescription : eventDescription.toLowerCase();
+          if (descText.includes(caseSensitive ? query : query.toLowerCase())) {
+            shouldShow = true;
+            matchedField = 'description';
+          }
+        }
+        
+        // Check sources
+        if (searchSources && !shouldShow) {
+          const sourcesText = caseSensitive ? eventSources : eventSources.toLowerCase();
+          if (sourcesText.includes(caseSensitive ? query : query.toLowerCase())) {
+            shouldShow = true;
+            matchedField = 'sources';
+          }
+        }
+        
+        if (shouldShow) {
+          eventElement.style.display = 'block';
+          visibleCount++;
+          matchedEvents.push(`${eventTitle} (${matchedField})`);
+          
+          // Highlight search terms
+          highlightSearchTerms(eventElement, query, caseSensitive);
+        } else {
+          eventElement.style.display = 'none';
+          removeHighlights(eventElement);
+        }
+      });
+      
+      updateSearchCount(visibleCount);
+      showSearchResults(visibleCount, query, matchedEvents.slice(0, 5));
+    }
+    
+    // Highlight search terms in event cards
+    function highlightSearchTerms(element, query, caseSensitive) {
+      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, caseSensitive ? 'g' : 'gi');
+      
+      // Find text nodes and highlight matches
+      const walker = document.createTreeWalker(
+        element,
+        NodeFilter.SHOW_TEXT,
+        null
+      );
+      
+      const textNodes = [];
+      let node;
+      while (node = walker.nextNode()) {
+        textNodes.push(node);
+      }
+      
+      textNodes.forEach(textNode => {
+        const text = textNode.textContent || '';
+        if (regex.test(text)) {
+          const highlightedHTML = text.replace(regex, '<mark class="bg-yellow-300/30 text-yellow-200 px-1 rounded">$1</mark>');
+          const tempDiv = document.createElement('div');
+          tempDiv.innerHTML = highlightedHTML;
+          
+          while (tempDiv.firstChild) {
+            textNode.parentNode?.insertBefore(tempDiv.firstChild, textNode);
+          }
+          textNode.remove();
+        }
+      });
+    }
+    
+    // Remove highlights from event cards
+    function removeHighlights(element) {
+      const highlights = element.querySelectorAll('mark');
+      highlights.forEach(mark => {
+        const parent = mark.parentNode;
+        if (parent) {
+          parent.replaceChild(document.createTextNode(mark.textContent || ''), mark);
+          parent.normalize();
+        }
+      });
+    }
+    
+    // Show all events
+    function showAllEvents() {
+      const eventCards = document.querySelectorAll('[data-event-id]');
+      eventCards.forEach(card => {
+        card.style.display = 'block';
+        removeHighlights(card);
+      });
+    }
+    
+    // Update search count display
+    function updateSearchCount(count) {
+      if (searchCount) {
+        if (count === -1) {
+          searchCount.textContent = `${totalEvents} events`;
+        } else {
+          searchCount.textContent = `${count} result${count !== 1 ? 's' : ''}`;
+        }
+      }
+    }
+    
+    // Show search results summary
+    function showSearchResults(count, query, matchedEvents) {
+      if (searchResultsSummary && resultsText) {
+        resultsText.textContent = `Found ${count} result${count !== 1 ? 's' : ''} for "${query}"`;
+        if (matchedEvents.length > 0) {
+          resultsText.textContent += ` - Top matches: ${matchedEvents.join(', ')}`;
+        }
+        searchResultsSummary.style.display = 'block';
+      }
+    }
+    
+    // Hide search results summary
+    function hideSearchResults() {
+      if (searchResultsSummary) {
+        searchResultsSummary.style.display = 'none';
+      }
+    }
+    
+    // Clear search
+    function clearSearch() {
+      if (searchInput) {
+        searchInput.value = '';
+        performSearch();
+        searchInput.focus();
+      }
+    }
+    
+    // Event listeners
+    if (searchInput) {
+      searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 300); // Debounce search
+      });
+      
+      searchInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          clearSearch();
+        }
+      });
+    }
+    
+    if (clearSearchBtn) {
+      clearSearchBtn.addEventListener('click', clearSearch);
+    }
+    
+    // Add listeners to search options
+    [searchTitlesCheckbox, searchDescriptionsCheckbox, searchSourcesCheckbox, caseSensitiveCheckbox].forEach(checkbox => {
+      if (checkbox) {
+        checkbox.addEventListener('change', performSearch);
+      }
+    });
+    
+    // Initial state
+    if (searchSuggestions) {
+      searchSuggestions.style.display = 'block';
+    }
+  });
+</script> 
