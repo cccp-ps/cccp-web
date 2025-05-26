@@ -32,11 +32,11 @@ function getTimelineDuration(timeline: Timeline): string {
     <title>CCCP.PS - Palestine Timeline Collection</title>
     <meta name="description" content="CCCP.PS - Comprehensive timeline collection tracking Palestinian solidarity, from the Nakba to the current crisis" />
   </head>
-  
+
   <body class="bg-black text-white font-mono antialiased">
     <!-- Navigation -->
     <TimelineNavigation />
-    
+
     <!-- Hero Section -->
     <header class="bg-gradient-to-br from-slate-900 via-slate-800 to-black py-16 px-4 relative overflow-hidden">
       <!-- Background Pattern -->
@@ -45,7 +45,7 @@ function getTimelineDuration(timeline: Timeline): string {
         <div class="absolute top-0 left-1/4 w-96 h-96 bg-red-500/5 rounded-full blur-3xl"></div>
         <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-green-500/5 rounded-full blur-3xl"></div>
       </div>
-      
+
       <div class="max-w-6xl mx-auto relative z-10 text-center">
         <!-- Main Headline -->
         <h1 class="text-5xl md:text-7xl lg:text-8xl font-black mb-6 text-white tracking-tight">
@@ -53,21 +53,21 @@ function getTimelineDuration(timeline: Timeline): string {
             CCCP.PS
           </span>
         </h1>
-        
+
         <!-- Sub-headline -->
         <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 text-red-300 tracking-wide">
           🇵🇸 PALESTINE TIMELINE COLLECTION
         </h2>
-        
+
         <!-- Decorative Lines -->
         <div class="w-full max-w-4xl mx-auto h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent mb-6"></div>
         <div class="w-full max-w-2xl mx-auto h-0.5 bg-gradient-to-r from-transparent via-white to-transparent mb-8"></div>
-        
+
         <!-- Description -->
         <p class="text-lg md:text-xl text-center text-gray-300 font-medium max-w-4xl mx-auto leading-relaxed mb-6">
           Comprehensive documentation of Palestinian solidarity across multiple historical periods - from the Nakba to the current crisis
         </p>
-        
+
         <!-- Stats -->
         <div class="flex flex-wrap justify-center gap-8 text-center">
           <div class="bg-black/30 border border-white/20 rounded-lg px-6 py-4">
@@ -88,7 +88,7 @@ function getTimelineDuration(timeline: Timeline): string {
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 py-12">
-      
+
       <!-- Featured Timeline Section -->
       {featuredTimeline && (
         <section class="mb-16">
@@ -96,7 +96,7 @@ function getTimelineDuration(timeline: Timeline): string {
             <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Featured Timeline</h2>
             <p class="text-gray-400 text-lg">Currently ongoing crisis requiring immediate attention</p>
           </div>
-          
+
           <div class={`featured-timeline timeline-${featuredTimeline.year}`}>
             <div class="group relative">
               <div class="absolute inset-0 timeline-bg-gradient opacity-20 rounded-2xl blur-xl group-hover:opacity-30 transition-opacity duration-300"></div>
@@ -112,17 +112,17 @@ function getTimelineDuration(timeline: Timeline): string {
                         </>
                       )}
                     </div>
-                    
+
                     <!-- Title -->
                     <h3 class="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
                       {featuredTimeline.name}
                     </h3>
-                    
+
                     <!-- Description -->
                     <p class="text-gray-300 text-xl leading-relaxed">
                       {featuredTimeline.description}
                     </p>
-                    
+
                     <!-- Timeline Stats -->
                     <div class="flex flex-wrap gap-6 text-sm">
                       <div class="flex items-center gap-2 text-gray-400">
@@ -138,10 +138,10 @@ function getTimelineDuration(timeline: Timeline): string {
                         <span>{getTimelineDuration(featuredTimeline)}</span>
                       </div>
                     </div>
-                    
+
                     <!-- CTA Button -->
                     <div class="pt-4">
-                      <a href={`/timeline/${featuredTimeline.year}`} 
+                      <a href={`/timeline/${featuredTimeline.year}`}
                          class="inline-flex items-center gap-3 timeline-bg-primary bg-opacity-80 hover:bg-opacity-100 text-white font-semibold px-8 py-4 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl">
                         <span>View Live Timeline</span>
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -150,13 +150,13 @@ function getTimelineDuration(timeline: Timeline): string {
                       </a>
                     </div>
                   </div>
-                  
+
                   <!-- Live Counter -->
                   <div class="mt-8 lg:mt-0 lg:w-80 lg:flex-shrink-0">
                     <div class="bg-black/60 border timeline-border rounded-xl p-6 text-center backdrop-blur-sm">
                       <div class="timeline-primary font-bold text-lg mb-3 tracking-wide">TIME ELAPSED</div>
-                      <div 
-                        id="featured-counter" 
+                      <div
+                        id="featured-counter"
                         class="text-2xl lg:text-3xl font-mono text-white"
                         data-timestamp={featuredTimeline.startTimestamp}>
                         <!-- Counter will be populated by JavaScript -->
@@ -177,14 +177,14 @@ function getTimelineDuration(timeline: Timeline): string {
           <h2 class="text-3xl md:text-4xl font-bold mb-4 text-white">Historical Timelines</h2>
           <p class="text-gray-400 text-lg">Documented periods of Palestinian resistance and international solidarity</p>
         </div>
-        
+
         <div class="timeline-grid">
           {historicalTimelines.map((timeline: Timeline) => (
             <div class={`timeline-${timeline.year}`}>
               <div class="group relative h-full">
                 <div class="absolute inset-0 timeline-bg-gradient opacity-10 rounded-2xl blur-xl group-hover:opacity-20 transition-opacity duration-300"></div>
                 <div class="relative bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-sm border timeline-border rounded-2xl p-6 shadow-xl timeline-card-hover transition-all duration-300 h-full flex flex-col">
-                  
+
                   <!-- Timeline Header -->
                   <div class="space-y-4 flex-1">
                     <!-- Year Badge -->
@@ -195,17 +195,17 @@ function getTimelineDuration(timeline: Timeline): string {
                       </div>
                       <div class="text-xs text-gray-500 uppercase tracking-wide">Historical</div>
                     </div>
-                    
+
                     <!-- Title -->
                     <h3 class="text-2xl md:text-3xl font-bold text-white leading-tight">
                       {timeline.name}
                     </h3>
-                    
+
                     <!-- Description -->
                     <p class="text-gray-300 leading-relaxed">
                       {timeline.description}
                     </p>
-                    
+
                     <!-- Timeline Stats -->
                     <div class="space-y-2 text-sm text-gray-400">
                       <div class="flex justify-between">
@@ -222,10 +222,10 @@ function getTimelineDuration(timeline: Timeline): string {
                       </div>
                     </div>
                   </div>
-                  
+
                   <!-- CTA Button -->
                   <div class="pt-6 mt-auto">
-                    <a href={`/timeline/${timeline.year}`} 
+                    <a href={`/timeline/${timeline.year}`}
                        class="w-full inline-flex items-center justify-center gap-2 timeline-bg-primary bg-opacity-20 hover:bg-opacity-30 text-white font-semibold px-6 py-3 rounded-lg border timeline-border-opacity transition-all duration-200">
                       <span>Explore Timeline</span>
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -247,7 +247,7 @@ function getTimelineDuration(timeline: Timeline): string {
             🇵🇸 In Solidarity with the Palestinian People 🇵🇸
           </h2>
           <p class="text-gray-400 text-lg max-w-3xl mx-auto leading-relaxed">
-            This timeline collection serves as a comprehensive documentation of Palestinian resilience, 
+            This timeline collection serves as a comprehensive documentation of Palestinian resilience,
             international solidarity, and the ongoing struggle for justice and human rights.
           </p>
         </div>
@@ -258,25 +258,27 @@ function getTimelineDuration(timeline: Timeline): string {
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         const featuredCounter = document.getElementById('featured-counter');
-        
+
         if (featuredCounter) {
           function updateFeaturedCounter() {
+            if (!featuredCounter) return;
+
             const timestamp = parseInt(featuredCounter.dataset.timestamp || '0');
             const now = Math.floor(Date.now() / 1000);
             const diff = now - timestamp;
-            
+
             const days = Math.floor(diff / 86400);
             const hours = Math.floor((diff % 86400) / 3600);
             const minutes = Math.floor((diff % 3600) / 60);
             const seconds = diff % 60;
-            
+
             featuredCounter.innerHTML = `
               <div class="text-4xl font-bold">${days}</div>
               <div class="text-sm opacity-70">days</div>
               <div class="text-xl">${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>
             `;
           }
-          
+
           // Update immediately and then every second
           updateFeaturedCounter();
           setInterval(updateFeaturedCounter, 1000);
@@ -284,4 +286,4 @@ function getTimelineDuration(timeline: Timeline): string {
       });
     </script>
   </body>
-</html> 
+</html>
