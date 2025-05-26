@@ -291,9 +291,9 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
           const now = Math.floor(Date.now() / 1000);
           
           counters.forEach(counter => {
-            const element = counter as HTMLElement;
-            const timestamp = parseInt(element.dataset.timestamp || '0');
-            const type = element.dataset.type || 'ongoing';
+            if (!(counter instanceof HTMLElement)) return;
+            const timestamp = parseInt(counter.dataset.timestamp || '0');
+            const type = counter.dataset.type || 'ongoing';
             const diff = now - timestamp;
             
             if (type === 'ongoing') {

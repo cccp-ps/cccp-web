@@ -261,8 +261,7 @@ function getTimelineDuration(timeline: Timeline): string {
         
         if (featuredCounter) {
           function updateFeaturedCounter() {
-            const element = featuredCounter as HTMLElement;
-            const timestamp = parseInt(element.dataset.timestamp || '0');
+            const timestamp = parseInt(featuredCounter.dataset.timestamp || '0');
             const now = Math.floor(Date.now() / 1000);
             const diff = now - timestamp;
             
@@ -271,13 +270,11 @@ function getTimelineDuration(timeline: Timeline): string {
             const minutes = Math.floor((diff % 3600) / 60);
             const seconds = diff % 60;
             
-            if (featuredCounter) {
-              featuredCounter.innerHTML = `
-                <div class="text-4xl font-bold">${days}</div>
-                <div class="text-sm opacity-70">days</div>
-                <div class="text-xl">${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>
-              `;
-            }
+            featuredCounter.innerHTML = `
+              <div class="text-4xl font-bold">${days}</div>
+              <div class="text-sm opacity-70">days</div>
+              <div class="text-xl">${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}</div>
+            `;
           }
           
           // Update immediately and then every second
