@@ -29,9 +29,9 @@ src/
 ├── data/
 │   ├── timelines/
 │   │   ├── 1948.ts      # Nakba and 1948 events
-│   │   ├── 1967.ts      # Six Day War (future)
-│   │   ├── 1987.ts      # First Intifada (future)
-│   │   ├── 2000.ts      # Second Intifada (future)
+│   │   ├── 1967.ts      # Six Day War 
+│   │   ├── 1987.ts      # First Intifada 
+│   │   ├── 2000.ts      # Second Intifada 
 │   │   ├── 2023.ts      # Current conflict (2023-present)
 │   │   └── index.ts     # Timeline registry
 │   └── types.ts         # TypeScript interfaces
@@ -51,325 +51,150 @@ src/
 
 ## Data Architecture
 
-### Core Types (src/data/types.ts)
+### Core Types System (src/data/types.ts)
 
-```typescript
-export interface TimelineEvent {
-  id: string;
-  date: string;
-  title: string;
-  description: string;
-  timestamp: number;
-  type: 'conflict' | 'ceasefire' | 'political' | 'humanitarian' | 'displacement';
-  utcTime: string;
-  sources: SourceLink[];
-  context?: string;
-  significance: 'critical' | 'major' | 'important' | 'notable';
-  casualties?: {
-    palestinian?: number;
-    israeli?: number;
-    civilian?: number;
-  };
-}
+**TimelineEvent Interface**
+- Unique event identification and metadata
+- Timestamp-based chronological ordering
+- Event categorization (conflict, ceasefire, political, humanitarian, displacement)
+- Source attribution and credibility tracking
+- Significance levels for prioritization
+- Optional casualty data for humanitarian context
 
-export interface Timeline {
-  year: number;
-  slug: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  period: {
-    start: number;
-    end?: number; // undefined for ongoing
-  };
-  theme: {
-    primary: string;
-    secondary: string;
-    accent: string;
-    background: string;
-  };
-  events: TimelineEvent[];
-  metadata: {
-    sources: SourceLink[];
-    lastUpdated: string;
-    tags: string[];
-    status: 'ongoing' | 'historical' | 'archived';
-  };
-  stats?: {
-    totalEvents: number;
-    duration: string;
-    keyOutcomes: string[];
-  };
-}
+**Timeline Interface**
+- Year-based organization and routing
+- Period definition with start/end timestamps
+- Thematic styling configuration per timeline
+- Event collection with metadata
+- Status tracking (ongoing, historical, archived)
+- Statistical summaries and key outcomes
 
-export interface SourceLink {
-  name: string;
-  url: string;
-  type: 'news' | 'academic' | 'official' | 'solidarity' | 'historical';
-  credibility: 'high' | 'medium' | 'verified';
-}
-```
+**SourceLink Interface**
+- Multi-type source categorization
+- Credibility assessment framework
+- External link management
 
 ### Timeline Data Organization
 
 #### Current Conflict - 2023 (src/data/timelines/2023.ts)
-```typescript
-export const timeline2023: Timeline = {
-  year: 2023,
-  slug: '2023',
-  title: 'Palestine Under Siege',
-  subtitle: '2023-Present Escalation',
-  description: 'Timeline of the current escalation beginning October 7, 2023',
-  period: {
-    start: 1696656600, // Oct 7, 2023
-    end: undefined // ongoing
-  },
-  theme: {
-    primary: 'red',
-    secondary: 'green',
-    accent: 'white',
-    background: 'black'
-  },
-  events: [
-    {
-      id: 'al-aqsa-flood',
-      date: '2023-10-07',
-      title: 'Hamas Insurgence (al-Aqsa Flood)',
-      description: 'The beginning of the current escalation in Gaza and the West Bank.',
-      timestamp: 1696656600,
-      type: 'conflict',
-      utcTime: '05:30',
-      significance: 'critical',
-      sources: [/* current sources */]
-    },
-    // ... other 2023 events
-  ],
-  metadata: {
-    sources: [/* comprehensive sources */],
-    lastUpdated: '2025-01-22',
-    tags: ['gaza', 'current', 'siege', 'ongoing'],
-    status: 'ongoing'
-  },
-  stats: {
-    totalEvents: 6,
-    duration: '15+ months',
-    keyOutcomes: ['Ongoing humanitarian crisis', 'International legal proceedings', 'Global solidarity movement']
-  }
-};
-```
+**Design Approach:**
+- Real-time tracking with ongoing status
+- Live counter functionality for all events
+- Red/green/white Palestinian flag theming
+- Emphasis on humanitarian crisis and international response
+- Sources from solidarity media and human rights organizations
+
+**Key Events Structure:**
+- Al-Aqsa Flood operation initiation
+- Israeli ground invasion escalation
+- Ceasefire negotiations and breakdowns
+- Humanitarian milestones and casualties
+- International legal and political developments
 
 #### Nakba - 1948 (src/data/timelines/1948.ts)
-```typescript
-export const timeline1948: Timeline = {
-  year: 1948,
-  slug: '1948',
-  title: 'The Nakba',
-  subtitle: '1948 Palestinian Catastrophe',
-  description: 'The systematic expulsion and displacement of Palestinians during the 1948 Arab-Israeli War',
-  period: {
-    start: -692841600, // May 15, 1948
-    end: -671529600   // Dec 31, 1948
-  },
-  theme: {
-    primary: 'orange',
-    secondary: 'yellow',
-    accent: 'black',
-    background: 'slate'
-  },
-  events: [
-    {
-      id: 'israel-declaration',
-      date: '1948-05-15',
-      title: 'Israel Declaration of Independence',
-      description: 'The state of Israel was declared, marking the beginning of systematic Palestinian displacement.',
-      timestamp: -692841600,
-      type: 'political',
-      utcTime: '00:00',
-      significance: 'critical',
-      casualties: {
-        palestinian: 15000, // estimated
-        civilian: 13000
-      },
-      sources: [/* historical sources */]
-    },
-    {
-      id: 'deir-yassin-massacre',
-      date: '1948-04-09',
-      title: 'Deir Yassin Massacre',
-      description: 'Zionist militias killed over 100 Palestinian villagers, escalating the ethnic cleansing campaign.',
-      timestamp: -696067200,
-      type: 'conflict',
-      utcTime: '06:00',
-      significance: 'critical',
-      sources: [/* historical sources */]
-    },
-    // ... more 1948 events
-  ],
-  metadata: {
-    sources: [/* historical archives */],
-    lastUpdated: '2025-01-22',
-    tags: ['nakba', '1948', 'displacement', 'historical', 'ethnic-cleansing'],
-    status: 'historical'
-  },
-  stats: {
-    totalEvents: 12,
-    duration: '8 months',
-    keyOutcomes: ['750,000+ Palestinians displaced', '531 villages destroyed', 'Creation of refugee crisis']
-  }
-};
-```
+**Design Approach:**
+- Historical perspective with archival documentation
+- Orange/yellow/black earth-tone theming representing displacement
+- Focus on village destruction and refugee creation
+- Long-term impact tracking ("X years since" counters)
+- Academic and historical source prioritization
+
+**Key Events Structure:**
+- Deir Yassin Massacre and early escalations
+- Israeli independence declaration
+- Village destructions and mass displacements
+- Refugee camp establishments
+- International recognition milestones
+
+#### Six Day War - 1967 (src/data/timelines/1967.ts)
+**Design Approach:**
+- Blue/white theming representing occupation expansion
+- West Bank and Gaza occupation focus
+- UN Resolution tracking
+- Settlement initiation documentation
+
+#### First Intifada - 1987 (src/data/timelines/1987.ts)
+**Design Approach:**
+- Purple theming representing popular resistance
+- Grassroots uprising documentation
+- Civil disobedience and collective punishment tracking
+- Oslo Accords pathway events
+
+#### Second Intifada - 2000 (src/data/timelines/2000.ts)
+**Design Approach:**
+- Maroon theming representing intensified conflict
+- Breakdown of Oslo process
+- Suicide bombing and military operation cycles
+- International intervention attempts
 
 ## Routing Strategy
 
 ### Dynamic Year-Based Routing (src/pages/timeline/[year].astro)
-```astro
----
-export async function getStaticPaths() {
-  const { getAllTimelines } = await import('../../data/timelines');
-  
-  return getAllTimelines().map(timeline => ({
-    params: { year: timeline.year.toString() }
-  }));
-}
+**Architecture:**
+- Static path generation from timeline registry
+- Year-based parameter extraction and validation
+- Timeline data fetching with error handling
+- Dynamic theme application based on timeline configuration
+- Conditional navigation state management
 
-const { year } = Astro.params;
-const { getTimelineByYear } = await import('../../data/timelines');
-const timeline = getTimelineByYear(parseInt(year));
-
-if (!timeline) {
-  return Astro.redirect('/404');
-}
----
-
-<Layout title={`${timeline.title} - CCCP.PS`}>
-  <TimelineNavigation currentYear={timeline.year} />
-  <main class={`timeline-${timeline.year} theme-${timeline.theme.primary}`}>
-    <TimelineList timeline={timeline} />
-    <TimelineSummary timeline={timeline} />
-  </main>
-</Layout>
-```
-
-### Homepage (src/pages/index.astro)
-```astro
----
-const { getAllTimelines } = await import('../data/timelines');
-const timelines = getAllTimelines();
-const currentTimeline = timelines.find(t => t.metadata.status === 'ongoing');
----
-
-<Layout title="CCCP.PS - Palestine Solidarity Timelines">
-  <Header />
-  
-  <main class="homepage">
-    <!-- Featured Current Timeline -->
-    {currentTimeline && (
-      <section class="featured-timeline">
-        <h2>Current Crisis</h2>
-        <TimelineCard timeline={currentTimeline} featured={true} />
-        <a href={`/timeline/${currentTimeline.year}`} class="cta-button">
-          View Full Timeline →
-        </a>
-      </section>
-    )}
-    
-    <!-- Historical Timelines Grid -->
-    <section class="historical-timelines">
-      <h2>Historical Timelines</h2>
-      <div class="timeline-grid">
-        {timelines
-          .filter(t => t.metadata.status === 'historical')
-          .map(timeline => (
-            <TimelineCard timeline={timeline} />
-          ))
-        }
-      </div>
-    </section>
-    
-    <!-- Coming Soon -->
-    <section class="coming-soon">
-      <h2>Coming Soon</h2>
-      <div class="timeline-previews">
-        <div class="timeline-preview">1967 - Six Day War</div>
-        <div class="timeline-preview">1987 - First Intifada</div>
-        <div class="timeline-preview">2000 - Second Intifada</div>
-      </div>
-    </section>
-  </main>
-  
-  <HumanitarianOrgs />
-  <SolidarityMessage />
-  <Footer />
-</Layout>
-```
+### Homepage Design (src/pages/index.astro)
+**Layout Structure:**
+- Featured current timeline with prominent display
+- Historical timelines grid with visual hierarchy
+- Timeline status differentiation (ongoing vs historical)
+- Call-to-action routing to detailed timeline views
+- Integration of support components and solidarity messaging
 
 ## Timeline Registry (src/data/timelines/index.ts)
 
-```typescript
-import { timeline1948 } from './1948';
-import { timeline2023 } from './2023';
-import type { Timeline } from '../types';
+**Registry Management:**
+- Central timeline import and organization
+- Year-based timeline mapping for efficient lookup
+- Multiple accessor functions for different use cases
+- Status-based filtering (ongoing, historical, archived)
+- Type-safe timeline retrieval with fallback handling
 
-export const timelines: Record<number, Timeline> = {
-  1948: timeline1948,
-  2023: timeline2023,
-  // Future timelines:
-  // 1967: timeline1967,
-  // 1987: timeline1987,
-  // 2000: timeline2000,
-};
-
-export const getAllTimelines = (): Timeline[] => Object.values(timelines);
-
-export const getTimelineByYear = (year: number): Timeline | undefined => timelines[year];
-
-export const getTimelineBySlug = (slug: string): Timeline | undefined => 
-  Object.values(timelines).find(t => t.slug === slug);
-
-export const getOngoingTimelines = (): Timeline[] => 
-  getAllTimelines().filter(t => t.metadata.status === 'ongoing');
-
-export const getHistoricalTimelines = (): Timeline[] => 
-  getAllTimelines().filter(t => t.metadata.status === 'historical');
-```
+**Key Functions:**
+- getAllTimelines(): Complete timeline collection
+- getTimelineByYear(): Year-based timeline lookup
+- getTimelineBySlug(): Alternative slug-based access
+- getOngoingTimelines(): Live timeline filtering
+- getHistoricalTimelines(): Historical timeline collection
 
 ## Component Architecture
 
 ### Timeline Navigation (src/components/layout/TimelineNavigation.astro)
-```astro
----
-export interface Props {
-  currentYear?: number;
-}
+**Design Principles:**
+- Brand identity integration with CCCP.PS logo
+- Dynamic timeline menu generation from registry
+- Active state management for current timeline
+- Theme-aware styling based on timeline configuration
+- Status indication for timeline state (ongoing/historical)
 
-const { currentYear } = Astro.props;
-const { getAllTimelines } = await import('../../data/timelines');
-const timelines = getAllTimelines();
----
+### Timeline Components (src/components/timeline/)
+**TimelineCard.astro:**
+- Reusable event display component
+- Theme-adaptive styling system
+- Counter integration for time tracking
+- Source attribution and metadata display
 
-<nav class="timeline-navigation">
-  <div class="nav-header">
-    <a href="/" class="logo">CCCP.PS</a>
-    <span class="tagline">Palestine Solidarity Timelines</span>
-  </div>
-  
-  <ul class="timeline-menu">
-    {timelines.map(timeline => (
-      <li>
-        <a 
-          href={`/timeline/${timeline.year}`}
-          class={`timeline-link ${currentYear === timeline.year ? 'active' : ''}`}
-          data-theme={timeline.theme.primary}
-        >
-          <span class="year">{timeline.year}</span>
-          <span class="title">{timeline.title}</span>
-          <span class="status">{timeline.metadata.status}</span>
-        </a>
-      </li>
-    ))}
-  </ul>
-</nav>
-```
+**TimelineList.astro:**
+- Event collection container
+- Chronological ordering and spacing
+- Responsive layout management
+- Event filtering and search integration
+
+**TimelineSummary.astro:**
+- Statistical overview display
+- Key outcomes highlighting
+- Source compilation table
+- Duration and impact metrics
+
+**TimelineCounter.astro:**
+- Real-time counter functionality
+- Historical vs ongoing counter types
+- Multi-format time display (seconds to years)
+- JavaScript integration for live updates
 
 ## Implementation Phases
 
