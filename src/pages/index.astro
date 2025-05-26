@@ -70,25 +70,9 @@ function getTimelineDuration(timeline: Timeline): string {
         <div class="w-full max-w-2xl mx-auto h-0.5 bg-gradient-to-r from-transparent via-white to-transparent mb-8"></div>
 
         <!-- Description -->
-        <p class="text-lg md:text-xl text-center text-gray-300 font-medium max-w-4xl mx-auto leading-relaxed mb-6">
+        <p class="text-lg md:text-xl text-center text-gray-300 font-medium max-w-4xl mx-auto leading-relaxed">
           Comprehensive documentation of Palestinian solidarity across multiple historical periods - from the Nakba to the current crisis
         </p>
-
-        <!-- Stats -->
-        <div class="flex flex-wrap justify-center gap-8 text-center">
-          <div class="bg-black/30 border border-white/20 rounded-lg px-6 py-4">
-            <div class="text-2xl font-bold text-red-300">{allTimelines.length}</div>
-            <div class="text-sm text-gray-300 uppercase tracking-wide">Historical Periods</div>
-          </div>
-          <div class="bg-black/30 border border-white/20 rounded-lg px-6 py-4">
-            <div class="text-2xl font-bold text-green-300">{ongoingTimelines.length}</div>
-            <div class="text-sm text-gray-300 uppercase tracking-wide">Ongoing Crises</div>
-          </div>
-          <div class="bg-black/30 border border-white/20 rounded-lg px-6 py-4">
-            <div class="text-2xl font-bold text-yellow-300">{allTimelines.reduce((sum, t) => sum + t.stats.totalEvents, 0)}</div>
-            <div class="text-sm text-gray-300 uppercase tracking-wide">Total Events</div>
-          </div>
-        </div>
       </div>
     </header>
 
