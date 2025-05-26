@@ -3,7 +3,6 @@ import { getAllTimelines, getTimelineByYear } from '../../data/timelines/index';
 import type { Timeline } from '../../data/types';
 import TimelineNavigation from '../../components/layout/TimelineNavigation.astro';
 import TimelineStats from '../../components/timeline/TimelineStats.astro';
-import KeyOutcomes from '../../components/timeline/KeyOutcomes.astro';
 import TimelineFilter from '../../components/timeline/TimelineFilter.astro';
 import TimelineSearch from '../../components/timeline/TimelineSearch.astro';
 import TimelineConnections from '../../components/timeline/TimelineConnections.astro';
@@ -189,9 +188,6 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
 
       <!-- Timeline Statistics -->
       <TimelineStats timeline={timeline} />
-
-      <!-- Key Outcomes -->
-      <KeyOutcomes timeline={timeline} />
 
       <!-- Timeline Connections -->
       <TimelineConnections timeline={timeline} />
