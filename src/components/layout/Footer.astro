@@ -1,0 +1,82 @@
+---
+import githubIcon from '../../assets/github_icon.webp';
+import agplIcon from '../../assets/agplv3_icon.png';
+---
+
+<footer class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 border-t border-slate-700/50 mt-auto">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+      
+      <!-- Project Description -->
+      <div class="text-center md:text-left max-w-md">
+        <h3 class="text-lg font-semibold bg-gradient-to-r from-red-400 via-white to-green-400 bg-clip-text text-transparent mb-2">
+          Palestinian Historical Timeline
+        </h3>
+        <p class="text-slate-300 text-sm leading-relaxed">
+          Documenting Palestinian history with accuracy, respect, and accessibility. A comprehensive resource for understanding the complex history of Palestine.
+        </p>
+      </div>
+
+      <!-- Icons and Links -->
+      <div class="flex items-center space-x-8">
+        
+        <!-- GitHub Link -->
+        <a href="https://github.com/cccp-ps/cccp-web" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           class="group relative flex items-center space-x-3 px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-600/30 hover:border-slate-500/50 hover:bg-slate-700/50 transition-all duration-300 transform hover:scale-105"
+           aria-label="View source code on GitHub">
+          <div class="relative">
+            <img src={githubIcon.src} 
+                 alt="GitHub" 
+                 class="w-8 h-8 filter brightness-90 group-hover:brightness-110 transition-all duration-300" />
+            <div class="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-white font-medium text-sm group-hover:text-purple-200 transition-colors duration-300">Source Code</span>
+            <span class="text-slate-400 text-xs group-hover:text-slate-300 transition-colors duration-300">Hosted on GitHub</span>
+          </div>
+        </a>
+
+        <!-- AGPL License Link -->
+        <a href="https://www.gnu.org/licenses/agpl-3.0.en.html" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           class="group relative flex items-center space-x-3 px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-600/30 hover:border-slate-500/50 hover:bg-slate-700/50 transition-all duration-300 transform hover:scale-105"
+           aria-label="View AGPL v3.0 License">
+          <div class="relative">
+            <img src={agplIcon.src} 
+                 alt="AGPL v3" 
+                 class="w-8 h-8 filter brightness-90 group-hover:brightness-110 transition-all duration-300" />
+            <div class="absolute inset-0 bg-gradient-to-r from-green-500/20 to-blue-500/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-white font-medium text-sm group-hover:text-green-200 transition-colors duration-300">AGPLv3</span>
+            <span class="text-slate-400 text-xs group-hover:text-slate-300 transition-colors duration-300">GNU License</span>
+          </div>
+        </a>
+        
+      </div>
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="mt-8 pt-6 border-t border-slate-700/30">
+      <div class="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+        
+        <!-- Copyright -->
+        <div class="text-slate-400 text-sm">
+          <p>© 2024 CCCP.PS • Built with ❤️ for historical education and awareness</p>
+        </div>
+
+        <!-- Additional Links -->
+        <div class="flex items-center space-x-6 text-sm">
+          <span class="text-slate-500">Dedicated to documenting history with accuracy and respect</span>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Subtle gradient overlay -->
+  <div class="absolute inset-0 bg-gradient-to-t from-slate-900/20 to-transparent pointer-events-none"></div>
+</footer> 

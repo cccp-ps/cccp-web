@@ -2,6 +2,7 @@
 import { getAllTimelines, getOngoingTimelines, getHistoricalTimelines } from '../data/timelines/index';
 import type { Timeline } from '../data/types';
 import TimelineNavigation from '../components/layout/TimelineNavigation.astro';
+import Footer from '../components/layout/Footer.astro';
 import AccessibilitySkipLink from '../components/shared/AccessibilitySkipLink.astro';
 import HumanitarianSupport from '../components/support/HumanitarianSupport.astro';
 import '../styles/global.css';
@@ -248,6 +249,9 @@ function getTimelineDuration(timeline: Timeline): string {
       <!-- Humanitarian Support Section -->
       <HumanitarianSupport />
     </main>
+
+    <!-- Footer -->
+    <Footer />
 
     <!-- Live Counter Script -->
     <script>
