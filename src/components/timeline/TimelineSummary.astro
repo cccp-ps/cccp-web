@@ -1,0 +1,35 @@
+---
+import type { Timeline } from '../../data/types';
+
+interface Props {
+  timeline: Timeline;
+}
+
+const { timeline } = Astro.props;
+---
+
+<!-- Timeline Summary -->
+<div class="mb-12 bg-gradient-to-br from-gray-900 to-black border timeline-border rounded-xl p-8 text-center">
+  <h2 class="text-2xl font-bold timeline-primary mb-4">Timeline Summary</h2>
+  <p class="text-gray-300 leading-relaxed max-w-4xl mx-auto text-lg">
+    {timeline.description}
+  </p>
+  {timeline.context && (
+    <p class="text-gray-400 leading-relaxed max-w-3xl mx-auto text-base mt-4">
+      {timeline.context}
+    </p>
+  )}
+  <div class="mt-6 flex items-center justify-center gap-4 text-sm text-gray-500">
+    <span>Period: {new Date(timeline.startTimestamp * 1000).getFullYear()}{timeline.endTimestamp ? ` - ${new Date(timeline.endTimestamp * 1000).getFullYear()}` : ' - Present'}</span>
+    <span>•</span>
+    <span>{timeline.stats.totalEvents} documented events</span>
+    <span>•</span>
+    <span class={`font-semibold ${
+      timeline.status === 'ongoing' ? 'text-red-400' :
+      timeline.status === 'historical' ? 'text-blue-400' :
+      'text-gray-400'
+    }`}>
+      {timeline.status.toUpperCase()}
+    </span>
+  </div>
+</div> 

@@ -13,124 +13,157 @@ const availableSignificance: SignificanceLevel[] = [...new Set(timeline.events.m
 const availableSourceTypes: SourceType[] = [...new Set(timeline.events.flatMap(event => event.sources.map(source => source.type)))];
 ---
 
-<div class="mb-8 bg-gradient-to-br from-gray-900 to-black border timeline-border rounded-xl p-6">
-  <div class="flex items-center justify-between mb-6">
-    <h3 class="text-xl font-bold timeline-primary">Filter Events</h3>
-    <button 
-      id="clear-filters" 
-      class="px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-gray-600/50 transition-colors duration-200"
-    >
-      Clear All
-    </button>
-  </div>
-  
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-    <!-- Category Filter -->
-    <div>
-      <label class="block text-sm font-medium text-gray-400 mb-3">Categories</label>
-      <div class="space-y-2 max-h-40 overflow-y-auto">
-        {availableCategories.map((category) => (
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input 
-              type="checkbox" 
-              class="category-filter rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-2"
-              value={category}
-              checked
-            />
-            <span class="text-sm text-gray-300 capitalize">{category.replace('_', ' ')}</span>
-          </label>
-        ))}
+<div class="mb-8 bg-gradient-to-br from-gray-900 to-black border timeline-border rounded-xl">
+  <!-- Toggle Header -->
+  <div class="flex items-center justify-between p-6 cursor-pointer" id="filter-toggle">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 bg-purple-500/20 border border-purple-500/50 rounded-lg flex items-center justify-center">
+        <svg class="w-4 h-4 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-bold timeline-primary">Filter Events</h3>
+      <div class="flex items-center gap-2 text-sm text-gray-400">
+        <span id="filter-count">{timeline.stats.totalEvents} events</span>
       </div>
     </div>
-    
-    <!-- Significance Filter -->
-    <div>
-      <label class="block text-sm font-medium text-gray-400 mb-3">Significance</label>
-      <div class="space-y-2">
-        {availableSignificance.map((significance) => (
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input 
-              type="checkbox" 
-              class="significance-filter rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-2"
-              value={significance}
-              checked
-            />
-            <span class={`text-sm capitalize font-medium ${
-              significance === 'critical' ? 'text-red-300' :
-              significance === 'major' ? 'text-orange-300' :
-              significance === 'moderate' ? 'text-yellow-300' :
-              'text-gray-300'
-            }`}>
-              {significance}
-            </span>
-          </label>
-        ))}
-      </div>
-    </div>
-    
-    <!-- Source Types Filter -->
-    <div>
-      <label class="block text-sm font-medium text-gray-400 mb-3">Source Types</label>
-      <div class="space-y-2 max-h-40 overflow-y-auto">
-        {availableSourceTypes.map((sourceType) => (
-          <label class="flex items-center gap-2 cursor-pointer">
-            <input 
-              type="checkbox" 
-              class="source-filter rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-2"
-              value={sourceType}
-              checked
-            />
-            <span class="text-sm text-gray-300 capitalize">{sourceType.replace('_', ' ')}</span>
-          </label>
-        ))}
-      </div>
-    </div>
-    
-    <!-- Date Range Filter -->
-    <div>
-      <label class="block text-sm font-medium text-gray-400 mb-3">Date Range</label>
-      <div class="space-y-3">
-        <div>
-          <label class="block text-xs text-gray-500 mb-1">From</label>
-          <input 
-            type="date" 
-            id="date-from"
-            class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-sm text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            value={new Date(timeline.startTimestamp * 1000).toISOString().split('T')[0]}
-          />
-        </div>
-        <div>
-          <label class="block text-xs text-gray-500 mb-1">To</label>
-          <input 
-            type="date" 
-            id="date-to"
-            class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-sm text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            value={timeline.endTimestamp ? 
-              new Date(timeline.endTimestamp * 1000).toISOString().split('T')[0] :
-              new Date().toISOString().split('T')[0]
-            }
-          />
-        </div>
-      </div>
+    <div class="flex items-center gap-2">
+      <span id="filter-status" class="text-sm text-gray-500">Click to expand</span>
+      <svg id="filter-chevron" class="w-5 h-5 text-gray-400 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+      </svg>
     </div>
   </div>
   
-  <!-- Active Filters Display -->
-  <div class="mt-6 pt-4 border-t border-gray-700">
-    <div class="flex items-center justify-between mb-3">
-      <span class="text-sm text-gray-400">Active Filters:</span>
-      <span id="event-count" class="text-sm timeline-primary font-semibold">
-        {timeline.stats.totalEvents} events
-      </span>
-    </div>
-    <div id="active-filters" class="flex flex-wrap gap-2">
-      <!-- Active filter tags will be populated by JavaScript -->
+  <!-- Collapsible Content -->
+  <div id="filter-content" class="hidden border-t border-gray-700">
+    <div class="p-6">
+      <div class="flex items-center justify-between mb-6">
+        <div class="text-lg font-semibold text-gray-300">Filter Options</div>
+        <button 
+          id="clear-filters" 
+          class="px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-gray-600/50 transition-colors duration-200"
+        >
+          Clear All
+        </button>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Category Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-3">Categories</label>
+          <div class="space-y-2 max-h-40 overflow-y-auto">
+            {availableCategories.map((category) => (
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  class="category-filter rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-2"
+                  value={category}
+                  checked
+                />
+                <span class="text-sm text-gray-300 capitalize">{category.replace('_', ' ')}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+        
+        <!-- Significance Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-3">Significance</label>
+          <div class="space-y-2">
+            {availableSignificance.map((significance) => (
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  class="significance-filter rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-2"
+                  value={significance}
+                  checked
+                />
+                <span class={`text-sm capitalize font-medium ${
+                  significance === 'critical' ? 'text-red-300' :
+                  significance === 'major' ? 'text-orange-300' :
+                  significance === 'moderate' ? 'text-yellow-300' :
+                  'text-gray-300'
+                }`}>
+                  {significance}
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
+        
+        <!-- Source Types Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-3">Source Types</label>
+          <div class="space-y-2 max-h-40 overflow-y-auto">
+            {availableSourceTypes.map((sourceType) => (
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input 
+                  type="checkbox" 
+                  class="source-filter rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500 focus:ring-2"
+                  value={sourceType}
+                  checked
+                />
+                <span class="text-sm text-gray-300 capitalize">{sourceType.replace('_', ' ')}</span>
+              </label>
+            ))}
+          </div>
+        </div>
+        
+        <!-- Date Range Filter -->
+        <div>
+          <label class="block text-sm font-medium text-gray-400 mb-3">Date Range</label>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">From</label>
+              <input 
+                type="date" 
+                id="date-from"
+                class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-sm text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={new Date(timeline.startTimestamp * 1000).toISOString().split('T')[0]}
+              />
+            </div>
+            <div>
+              <label class="block text-xs text-gray-500 mb-1">To</label>
+              <input 
+                type="date" 
+                id="date-to"
+                class="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg text-sm text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                value={timeline.endTimestamp ? 
+                  new Date(timeline.endTimestamp * 1000).toISOString().split('T')[0] :
+                  new Date().toISOString().split('T')[0]
+                }
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Active Filters Display -->
+      <div class="mt-6 pt-4 border-t border-gray-700">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-sm text-gray-400">Active Filters:</span>
+          <span id="event-count" class="text-sm timeline-primary font-semibold">
+            {timeline.stats.totalEvents} events
+          </span>
+        </div>
+        <div id="active-filters" class="flex flex-wrap gap-2">
+          <!-- Active filter tags will be populated by JavaScript -->
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
+    // Toggle functionality
+    const filterToggle = document.getElementById('filter-toggle');
+    const filterContent = document.getElementById('filter-content');
+    const filterChevron = document.getElementById('filter-chevron');
+    const filterStatus = document.getElementById('filter-status');
+    
+    // Filter functionality elements
     const categoryFilters = document.querySelectorAll('.category-filter');
     const significanceFilters = document.querySelectorAll('.significance-filter');
     const sourceFilters = document.querySelectorAll('.source-filter');
@@ -139,6 +172,28 @@ const availableSourceTypes: SourceType[] = [...new Set(timeline.events.flatMap(e
     const clearFiltersBtn = document.getElementById('clear-filters');
     const eventCountDisplay = document.getElementById('event-count');
     const activeFiltersDisplay = document.getElementById('active-filters');
+    
+    let isExpanded = false;
+    
+    // Toggle filter panel
+    function toggleFilterPanel() {
+      isExpanded = !isExpanded;
+      
+      if (isExpanded) {
+        filterContent?.classList.remove('hidden');
+        if (filterChevron) filterChevron.style.transform = 'rotate(180deg)';
+        if (filterStatus) filterStatus.textContent = 'Click to collapse';
+      } else {
+        filterContent?.classList.add('hidden');
+        if (filterChevron) filterChevron.style.transform = 'rotate(0deg)';
+        if (filterStatus) filterStatus.textContent = 'Click to expand';
+      }
+    }
+    
+    // Add toggle event listener
+    if (filterToggle) {
+      filterToggle.addEventListener('click', toggleFilterPanel);
+    }
     
     // Apply filters to events
     function applyFilters() {
