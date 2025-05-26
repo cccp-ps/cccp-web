@@ -1,26 +1,2 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-    <!-- Palestinian flag-inspired favicon -->
-    <!-- Background circle -->
-    <circle cx="64" cy="64" r="60" fill="#000" stroke="#fff" stroke-width="2"/>
-    
-    <!-- Palestinian flag stripes -->
-    <rect x="20" y="32" width="88" height="16" fill="#000"/>
-    <rect x="20" y="48" width="88" height="16" fill="#fff"/>
-    <rect x="20" y="64" width="88" height="16" fill="#22c55e"/>
-    
-    <!-- Red triangle (left side) -->
-    <path d="M20 32 L20 96 L56 64 Z" fill="#dc2626"/>
-    
-    <!-- Olive branch symbol (simplified) -->
-    <g transform="translate(72, 84)">
-        <path d="M0 0 Q8 -4 16 0 Q12 2 8 0 Q4 2 0 0" fill="#22c55e" opacity="0.8"/>
-        <circle cx="4" cy="-1" r="1.5" fill="#22c55e"/>
-        <circle cx="12" cy="-1" r="1.5" fill="#22c55e"/>
-    </g>
-    
-    <style>
-        @media (prefers-color-scheme: light) {
-            circle { stroke: #333; }
-        }
-    </style>
-</svg>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="600" viewBox="0 0 6 3"><rect fill="#009639" width="6" height="3"/><rect fill="#FFF" width="6" height="2"/><rect width="6" height="1"/><path fill="#ED2E38" d="M0,0l2,1.5L0,3Z"/></svg>
