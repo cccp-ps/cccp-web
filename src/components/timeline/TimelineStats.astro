@@ -210,7 +210,7 @@ function formatDuration(seconds: number): string {
   )}
 </div>
 
-<script define:vars={{ startTimestamp: timeline.startTimestamp }}>
+<script is:inline define:vars={{ startTimestamp: timeline.startTimestamp }}>
   // Update live status for ongoing timelines
   if (document.getElementById('days-elapsed')) {
     function updateLiveStats() {

@@ -1,10 +1,9 @@
 ---
-import { getAllTimelines, getOngoingTimelines } from '../../data/timelines/index';
+import { getAllTimelines } from '../../data/timelines/index';
 import type { Timeline } from '../../data/types';
 
 // Get all timelines for navigation
 const allTimelines: Timeline[] = getAllTimelines();
-const ongoingTimelines: Timeline[] = getOngoingTimelines();
 
 // Get current page year for active state
 const currentPath: string = Astro.url.pathname;

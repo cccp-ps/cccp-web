@@ -120,7 +120,7 @@ const { timeline } = Astro.props;
   </div>
 </div>
 
-<script define:vars={{ totalEvents: timeline.stats.totalEvents }}>
+<script is:inline define:vars={{ totalEvents: timeline.stats.totalEvents }}>
   document.addEventListener('DOMContentLoaded', () => {
     // Toggle functionality
     const searchToggle = document.getElementById('search-toggle');
@@ -236,7 +236,6 @@ const { timeline } = Astro.props;
         return;
       }
       
-      const searchRegex = new RegExp(caseSensitive ? query : query.toLowerCase(), 'g');
       let visibleCount = 0;
       let matchedEvents = [];
       
@@ -399,7 +398,7 @@ const { timeline } = Astro.props;
     
     // Event listeners
     if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
+      searchInput.addEventListener('input', () => {
         clearTimeout(searchTimeout);
         // Increase debounce time to prevent rapid firing
         searchTimeout = setTimeout(() => {
