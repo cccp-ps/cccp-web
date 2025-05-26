@@ -119,20 +119,6 @@ export interface TimelineStats {
   humanitarianImpacts?: string[];
 }
 
-export interface FilterOptions {
-  /** Categories to include */
-  categories?: EventCategory[];
-  /** Significance levels to include */
-  significance?: SignificanceLevel[];
-  /** Date range filter */
-  dateRange?: {
-    start: number;
-    end: number;
-  };
-  /** Source types to include */
-  sourceTypes?: SourceType[];
-}
-
 export interface SearchOptions {
   /** Search query text */
   query: string;

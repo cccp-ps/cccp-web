@@ -3,7 +3,7 @@ import { getAllTimelines, getTimelineByYear } from '../../data/timelines/index';
 import type { Timeline } from '../../data/types';
 import TimelineNavigation from '../../components/layout/TimelineNavigation.astro';
 import TimelineStats from '../../components/timeline/TimelineStats.astro';
-import TimelineFilter from '../../components/timeline/TimelineFilter.astro';
+
 import TimelineSearch from '../../components/timeline/TimelineSearch.astro';
 import TimelineConnections from '../../components/timeline/TimelineConnections.astro';
 import TimelineSummary from '../../components/timeline/TimelineSummary.astro';
@@ -108,7 +108,6 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
     
     <!-- ARIA Live Region for Announcements -->
     <LiveRegion id="search-announcements" />
-    <LiveRegion id="filter-announcements" />
     
     <!-- Navigation -->
     <TimelineNavigation />
@@ -192,17 +191,16 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
       <!-- Timeline Connections -->
       <TimelineConnections timeline={timeline} />
 
-      <!-- Search and Filter Controls -->
+      <!-- Search Controls -->
       <div class="mb-12 space-y-6">
         <TimelineSearch timeline={timeline} />
-        <TimelineFilter timeline={timeline} />
       </div>
       
       <!-- Events Timeline -->
       <section class="space-y-12" role="region" aria-label="Timeline events" aria-describedby="timeline-description">
         <h2 id="timeline-events-heading" class="text-3xl font-bold text-center mb-12 timeline-primary">Timeline of Events</h2>
         <div id="timeline-description" class="sr-only">
-          A chronological list of {timeline.stats.totalEvents} documented events from {timeline.name}. Use the search and filter controls above to narrow results.
+          A chronological list of {timeline.stats.totalEvents} documented events from {timeline.name}. Use the search controls above to narrow results.
         </div>
         
                   {timeline.events.map((event) => (
@@ -213,10 +211,6 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
                      data-event-id={event.id}
                      data-event-title={event.title}
                      data-event-description={event.description}
-                     data-event-category={event.category}
-                     data-event-significance={event.significance}
-                     data-event-timestamp={event.timestamp}
-                     data-event-sources={event.sources.map(s => s.type).join(',')}
                      data-event-source-names={event.sources.map(s => s.name).join(', ')}>
               <div class="absolute inset-0 timeline-bg opacity-10 rounded-2xl blur-xl group-hover:opacity-20 transition-opacity duration-300"></div>
               <div class="relative bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-sm border timeline-border rounded-2xl p-8 shadow-2xl transition-all duration-300">
@@ -412,17 +406,13 @@ function formatTimestamp(timestamp: number, includeTime: boolean = false): strin
         // Keyboard navigation support
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') {
-            // Clear search and filters on Escape
+            // Clear search on Escape
             const searchInput = document.getElementById('search-input') as HTMLInputElement;
-            const clearFiltersBtn = document.getElementById('clear-filters') as HTMLButtonElement;
             
             if (searchInput && searchInput.value) {
               searchInput.value = '';
               searchInput.dispatchEvent(new Event('input'));
               announceToScreenReader('Search cleared');
-            } else if (clearFiltersBtn) {
-              clearFiltersBtn.click();
-              announceToScreenReader('All filters cleared');
             }
           }
         });

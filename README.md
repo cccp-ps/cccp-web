@@ -19,7 +19,7 @@ CCCP.PS is an interactive web application that presents a comprehensive timeline
 ### ✨ Key Features
 
 - **📅 Interactive Timelines** - Navigate through different historical periods (1948, 1967, 1987, 2000, 2023+)
-- **🔍 Advanced Search & Filtering** - Search events by title, description, sources, categories, and significance levels
+- **🔍 Advanced Search** - Search events by title, description, and sources
 - **🔗 Event Connections** - Explore relationships between events across different timelines
 - **📊 Statistical Analysis** - View comprehensive statistics and humanitarian impact data
 - **📱 Responsive Design** - Optimized for all devices with modern, accessible UI
