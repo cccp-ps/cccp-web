@@ -11,21 +11,21 @@ export const ORGANIZATIONS: Organization[] = [
     url: 'https://donate.unrwa.org',
     description: 'United Nations Relief and Works Agency for Palestine Refugees',
     category: 'humanitarian',
-    icon: 'mdi:heart-outline'
+    icon: 'lucide:heart'
   },
   {
     name: 'Palestine Red Crescent Society (PRCS)',
     url: 'https://www.palestinercs.org/en',
     description: 'Emergency medical services and humanitarian aid in Palestine',
     category: 'medical',
-    icon: 'mdi:medical-bag'
+    icon: 'lucide:cross'
   },
   {
     name: 'Palestine Children\'s Relief Fund (PCRF)',
     url: 'https://www.pcrf.net/',
     description: 'Medical care and humanitarian relief for Palestinian children',
     category: 'children',
-    icon: 'mdi:account-child-outline'
+    icon: 'lucide:baby'
   }
 ];
 
