@@ -246,6 +246,133 @@ describe('Time Calculation Utilities', () => {
     });
   });
 
+  describe('Edge cases and error handling', () => {
+    it('should handle very large timestamp differences', () => {
+      const start = 0; // Unix epoch
+      const end = 2147483647; // Max 32-bit signed integer
+      
+      const result = calculateElapsedTime(start, end);
+      
+      expect(result.years).toBeGreaterThan(60);
+      expect(result.totalDays).toBeGreaterThan(20000);
+      expect(result.totalHours).toBeGreaterThan(500000);
+    });
+
+    it('should handle fractional timestamps correctly', () => {
+      const start = 1696809120.5;
+      const end = 1696809121.7;
+      
+      const result = calculateElapsedTime(start, end);
+      
+      expect(result.seconds).toBe(1);
+      expect(result.minutes).toBe(0);
+    });
+
+    it('should handle timestamps at month boundaries', () => {
+      // Test February to March transition
+      const feb28 = new Date('2023-02-28T23:59:59Z').getTime() / 1000;
+      const mar1 = new Date('2023-03-01T00:00:00Z').getTime() / 1000;
+      
+      const result = calculateElapsedTime(feb28, mar1);
+      
+      expect(result.days).toBe(0);
+      expect(result.hours).toBe(0);
+      expect(result.minutes).toBe(0);
+      expect(result.seconds).toBe(1);
+    });
+
+    it('should handle year boundaries correctly', () => {
+      // Test December 31 to January 1 transition
+      const dec31 = new Date('2023-12-31T23:59:59Z').getTime() / 1000;
+      const jan1 = new Date('2024-01-01T00:00:00Z').getTime() / 1000;
+      
+      const result = calculateElapsedTime(dec31, jan1);
+      
+      expect(result.years).toBe(0);
+      expect(result.months).toBe(0);
+      expect(result.days).toBe(0);
+      expect(result.hours).toBe(0);
+      expect(result.minutes).toBe(0);
+      expect(result.seconds).toBe(1);
+    });
+
+    it('should handle daylight saving time transitions', () => {
+      // Test around DST transition (though we use UTC, this tests robustness)
+      const beforeDST = new Date('2023-03-12T06:00:00Z').getTime() / 1000;
+      const afterDST = new Date('2023-03-12T08:00:00Z').getTime() / 1000;
+      
+      const result = calculateElapsedTime(beforeDST, afterDST);
+      
+      expect(result.hours).toBe(2);
+      expect(result.minutes).toBe(0);
+      expect(result.seconds).toBe(0);
+    });
+
+    it('should handle maximum safe integer timestamps', () => {
+      const start = Number.MAX_SAFE_INTEGER - 1000;
+      const end = Number.MAX_SAFE_INTEGER;
+      
+      expect(() => calculateElapsedTime(start, end)).not.toThrow();
+    });
+  });
+
+  describe('Performance and stress tests', () => {
+    it('should calculate elapsed time quickly for normal ranges', () => {
+      const start = performance.now();
+      
+      for (let i = 0; i < 1000; i++) {
+        calculateElapsedTime(GAZA_WAR_START_TIMESTAMP, GAZA_WAR_START_TIMESTAMP + i);
+      }
+      
+      const end = performance.now();
+      const duration = end - start;
+      
+      // Should complete 1000 calculations in under 100ms
+      expect(duration).toBeLessThan(100);
+    });
+
+    it('should handle rapid successive calls', () => {
+      const baseTime = GAZA_WAR_START_TIMESTAMP;
+      const results: TimeElapsed[] = [];
+      
+      for (let i = 0; i < 100; i++) {
+        results.push(calculateElapsedTime(baseTime, baseTime + i));
+      }
+      
+      // Verify results are consistent - total seconds should be increasing
+      for (let i = 1; i < results.length; i++) {
+        const prevTotal = results[i - 1].seconds + results[i - 1].minutes * 60 + results[i - 1].hours * 3600;
+        const currTotal = results[i].seconds + results[i].minutes * 60 + results[i].hours * 3600;
+        expect(currTotal).toBeGreaterThanOrEqual(prevTotal);
+      }
+    });
+  });
+
+  describe('Type safety and TypeScript integration', () => {
+    it('should return correct TypeScript types', () => {
+      const result = calculateElapsedTime(GAZA_WAR_START_TIMESTAMP, GAZA_WAR_START_TIMESTAMP + 1);
+      
+      // Verify all properties exist and are numbers
+      expect(typeof result.years).toBe('number');
+      expect(typeof result.months).toBe('number');
+      expect(typeof result.days).toBe('number');
+      expect(typeof result.hours).toBe('number');
+      expect(typeof result.minutes).toBe('number');
+      expect(typeof result.seconds).toBe('number');
+      expect(typeof result.totalDays).toBe('number');
+      expect(typeof result.totalHours).toBe('number');
+    });
+
+    it('should work with TimeElapsed interface', () => {
+      const result: TimeElapsed = calculateElapsedTime(GAZA_WAR_START_TIMESTAMP, GAZA_WAR_START_TIMESTAMP + 3661);
+      
+      // Should have exactly 1 hour, 1 minute, 1 second
+      expect(result.hours).toBe(1);
+      expect(result.minutes).toBe(1);
+      expect(result.seconds).toBe(1);
+    });
+  });
+
   describe('Integration tests', () => {
     it('should calculate elapsed time from Gaza war start to known date', () => {
       // Test with a known date: January 1, 2024, 00:00:00 UTC
@@ -286,6 +413,26 @@ describe('Time Calculation Utilities', () => {
         expect(result.hours).toBe(0);
         expect(result.days).toBe(0);
       }
+    });
+
+    it('should work correctly with all utility functions together', () => {
+      const currentTime = Math.floor(Date.now() / 1000);
+      const result = calculateElapsedTime(GAZA_WAR_START_TIMESTAMP, currentTime);
+      
+      // Verify all helper functions work together
+      expect(validateTimestamp(GAZA_WAR_START_TIMESTAMP)).toBe(true);
+      expect(validateTimestamp(currentTime)).toBe(true);
+      
+      // Test formatting
+      expect(formatTimeUnit(result.years, 'year')).toMatch(/^\d+ years?$/);
+      expect(formatTimeUnit(result.months, 'month')).toMatch(/^\d+ months?$/);
+      expect(formatTimeUnit(result.days, 'day')).toMatch(/^\d+ days?$/);
+      
+      // Test leap year and month calculations
+      const currentDate = new Date(currentTime * 1000);
+      const currentYear = currentDate.getUTCFullYear();
+      expect(typeof isLeapYear(currentYear)).toBe('boolean');
+      expect(getDaysInMonth(currentDate.getUTCMonth() + 1, currentYear)).toBeGreaterThan(27);
     });
   });
 });
