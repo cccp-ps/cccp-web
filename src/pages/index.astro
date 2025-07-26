@@ -1,5 +1,5 @@
 ---
-
+import '../styles/global.css';
 ---
 
 <html lang="en">
@@ -10,7 +10,15 @@
 		<meta name="generator" content={Astro.generator} />
 		<title>Astro</title>
 	</head>
-	<body>
-		<h1>Astro</h1>
+	<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+		<div class="bg-white p-8 rounded-lg shadow-lg text-center">
+			<h1 class="text-4xl font-bold text-gray-800 mb-4">Welcome to Astro!</h1>
+			<p class="text-gray-600 mb-6">This is a TypeScript-powered Astro site with Tailwind CSS.</p>
+			<div class="space-x-4">
+				<span class="inline-block bg-blue-500 text-white px-4 py-2 rounded">TypeScript ✓</span>
+				<span class="inline-block bg-green-500 text-white px-4 py-2 rounded">Tailwind CSS ✓</span>
+				<span class="inline-block bg-purple-500 text-white px-4 py-2 rounded">Astro ✓</span>
+			</div>
+		</div>
 	</body>
 </html>
