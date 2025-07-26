@@ -1,0 +1,194 @@
+---
+// ContextSection.astro - Respectful context section with socialist perspective
+// Provides context about the counter while maintaining tasteful solidarity messaging
+---
+
+<section class="context-section" role="region" aria-labelledby="context-heading">
+  <div class="container">
+    <div class="context-content">
+      <!-- Main heading -->
+      <h2 id="context-heading" class="context-title">
+        Time Since October 8, 2023
+      </h2>
+      
+      <!-- Context paragraph with respectful messaging -->
+      <div class="context-text">
+        <p class="context-intro">
+          This counter marks the time elapsed since October 8, 2023, at 23:52 UTC, when Israel declared war on Gaza following the events of October 7th. 
+          What began as a response has evolved into an ongoing humanitarian crisis affecting millions of Palestinian civilians.
+        </p>
+        
+        <p class="context-solidarity">
+          We stand in solidarity with all victims of violence and believe that lasting peace can only be achieved through justice, equality, and the recognition of fundamental human rights for all people. 
+          The international working class has historically stood against oppression and for the liberation of all peoples.
+        </p>
+        
+        <p class="context-call">
+          Every second that passes represents lives affected, families displaced, and communities destroyed. 
+          This counter serves as a reminder that behind every number are real human beings deserving of dignity, safety, and the right to self-determination.
+        </p>
+      </div>
+      
+      <!-- Accessibility note for screen readers -->
+      <div class="sr-only" aria-live="polite">
+        Context section providing background information about the Palestine solidarity counter and its significance
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .context-section {
+    @apply w-full py-12 md:py-16 lg:py-20;
+    @apply bg-gray-50;
+    border-top: 4px solid var(--color-palestine-green);
+    border-bottom: 4px solid var(--color-palestine-red);
+  }
+
+  .container {
+    @apply max-w-4xl mx-auto px-4 md:px-6 lg:px-8;
+  }
+
+  .context-content {
+    @apply text-center max-w-3xl mx-auto;
+  }
+
+  .context-title {
+    @apply text-2xl md:text-3xl lg:text-4xl font-bold mb-8;
+    @apply text-gray-900;
+    color: var(--color-palestine-black);
+    line-height: var(--line-height-tight);
+  }
+
+  .context-text {
+    @apply space-y-6 text-left;
+  }
+
+  .context-intro {
+    @apply text-base md:text-lg leading-relaxed;
+    @apply text-gray-700;
+    line-height: var(--line-height-relaxed);
+  }
+
+  .context-solidarity {
+    @apply text-base md:text-lg leading-relaxed;
+    @apply text-gray-700;
+    @apply border-l-4 pl-6;
+    border-left-color: var(--color-palestine-red);
+    line-height: var(--line-height-relaxed);
+    font-style: italic;
+  }
+
+  .context-call {
+    @apply text-base md:text-lg leading-relaxed;
+    @apply text-gray-800 font-medium;
+    line-height: var(--line-height-relaxed);
+  }
+
+  /* Responsive typography adjustments */
+  @media (min-width: 768px) {
+    .context-text {
+      @apply text-center;
+    }
+    
+    .context-solidarity {
+      @apply border-l-0 border-t-4 pt-6 pl-0;
+      border-top-color: var(--color-palestine-red);
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .context-section {
+      @apply bg-white;
+      border-top: 6px solid var(--color-palestine-green);
+      border-bottom: 6px solid var(--color-palestine-red);
+    }
+    
+    .context-title {
+      @apply text-black;
+    }
+    
+    .context-intro,
+    .context-solidarity,
+    .context-call {
+      @apply text-black;
+    }
+    
+    .context-solidarity {
+      border-left-color: var(--color-palestine-black);
+    }
+    
+    @media (min-width: 768px) {
+      .context-solidarity {
+        border-top-color: var(--color-palestine-black);
+      }
+    }
+  }
+
+  /* Dark mode support */
+  @media (prefers-color-scheme: dark) {
+    .context-section {
+      @apply bg-gray-900;
+    }
+    
+    .context-title {
+      @apply text-white;
+    }
+    
+    .context-intro,
+    .context-solidarity {
+      @apply text-gray-300;
+    }
+    
+    .context-call {
+      @apply text-gray-200;
+    }
+  }
+
+  /* Focus styles for accessibility */
+  .context-section:focus-within {
+    @apply outline-none;
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .context-section * {
+      transition: none;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .context-section {
+      @apply bg-white;
+      border-top: 2px solid black;
+      border-bottom: 2px solid black;
+    }
+    
+    .context-title,
+    .context-intro,
+    .context-solidarity,
+    .context-call {
+      @apply text-black;
+    }
+    
+    .context-solidarity {
+      border-left-color: black;
+    }
+    
+    @media (min-width: 768px) {
+      .context-solidarity {
+        border-top-color: black;
+      }
+    }
+  }
+
+  /* Screen reader only utility */
+  .sr-only {
+    @apply absolute w-px h-px p-0 -m-px overflow-hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
