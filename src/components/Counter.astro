@@ -15,8 +15,25 @@ const initialElapsedTime = calculateElapsedTime(START_TIMESTAMP, currentTimestam
     Real-time counter showing elapsed time since October 8, 2023, when Israel declared war on Gaza
   </div>
 
+  <!-- Loading state -->
+  <div class="loading-overlay" id="loading-overlay" aria-hidden="true">
+    <div class="loading-spinner" aria-label="Loading counter"></div>
+    <span class="loading-text">Initializing counter...</span>
+  </div>
+
+  <!-- Error state -->
+  <div class="error-boundary" id="error-boundary" aria-hidden="true" role="alert">
+    <div class="error-content">
+      <h3>Counter Error</h3>
+      <p id="error-message">An error occurred while loading the counter.</p>
+      <button type="button" id="retry-button" aria-label="Retry loading counter">
+        Try Again
+      </button>
+    </div>
+  </div>
+
   <!-- Main counter display -->
-  <div class="counter-display" aria-describedby="counter-description">
+  <div class="counter-display" aria-describedby="counter-description" id="main-counter">
     <!-- Time units grid -->
     <div class="time-grid" role="timer" aria-live="polite" aria-atomic="true" aria-label="Elapsed time counter">
       <div class="time-unit" data-unit="years">
@@ -232,6 +249,128 @@ const initialElapsedTime = calculateElapsedTime(START_TIMESTAMP, currentTimestam
       color: #d1d5db;
     }
   }
+
+  /* Loading overlay */
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .loading-overlay[aria-hidden="true"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f4f6;
+    border-top: 4px solid var(--color-palestine-red);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 1rem;
+  }
+
+  .loading-text {
+    color: var(--color-gray-700);
+    font-weight: 500;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Error boundary */
+  .error-boundary {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(248, 113, 113, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    transition: opacity 0.3s ease-in-out;
+  }
+
+  .error-boundary[aria-hidden="true"] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .error-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    text-align: center;
+    max-width: 400px;
+    margin: 0 1rem;
+  }
+
+  .error-content h3 {
+    color: var(--color-palestine-red);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .error-content p {
+    color: var(--color-gray-700);
+    margin-bottom: 1.5rem;
+  }
+
+  #retry-button {
+    background-color: var(--color-palestine-red);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+
+  #retry-button:hover {
+    background-color: #dc2626;
+  }
+
+  #retry-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--color-palestine-red), 0 0 0 4px rgba(206, 17, 38, 0.2);
+  }
+
+  /* Loading and error states in dark mode */
+  @media (prefers-color-scheme: dark) {
+    .loading-overlay {
+      background-color: rgba(31, 41, 55, 0.9);
+    }
+    
+    .loading-text {
+      color: #d1d5db;
+    }
+    
+    .error-content {
+      background-color: #1f2937;
+    }
+    
+    .error-content p {
+      color: #d1d5db;
+    }
+  }
 </style>
 
 <script>
@@ -243,6 +382,11 @@ const initialElapsedTime = calculateElapsedTime(START_TIMESTAMP, currentTimestam
   class CounterManager {
     private intervalId: number | null = null;
     private isActive: boolean = false;
+    private lastUpdateTime: number = 0;
+    private rafId: number | null = null;
+    private isVisible: boolean = true;
+    private errorCount: number = 0;
+    private maxRetries: number = 3;
     private elements: {
       years: HTMLElement | null;
       months: HTMLElement | null;
@@ -251,6 +395,11 @@ const initialElapsedTime = calculateElapsedTime(START_TIMESTAMP, currentTimestam
       minutes: HTMLElement | null;
       seconds: HTMLElement | null;
       altFormat: HTMLElement | null;
+      loadingOverlay: HTMLElement | null;
+      errorBoundary: HTMLElement | null;
+      errorMessage: HTMLElement | null;
+      retryButton: HTMLElement | null;
+      mainCounter: HTMLElement | null;
     };
 
     constructor() {
@@ -261,18 +410,41 @@ const initialElapsedTime = calculateElapsedTime(START_TIMESTAMP, currentTimestam
         hours: document.getElementById('hours-value'),
         minutes: document.getElementById('minutes-value'),
         seconds: document.getElementById('seconds-value'),
-        altFormat: document.getElementById('counter-alt-format')
+        altFormat: document.getElementById('counter-alt-format'),
+        loadingOverlay: document.getElementById('loading-overlay'),
+        errorBoundary: document.getElementById('error-boundary'),
+        errorMessage: document.getElementById('error-message'),
+        retryButton: document.getElementById('retry-button'),
+        mainCounter: document.getElementById('main-counter')
       };
 
       this.init();
     }
 
     private init(): void {
-      // Start the counter when the page loads
-      this.start();
+      // Show loading state
+      this.showLoading();
+
+      // Set up retry button handler
+      if (this.elements.retryButton) {
+        this.elements.retryButton.addEventListener('click', () => {
+          this.retry();
+        });
+      }
+
+      // Simulate initialization delay and then start
+      setTimeout(() => {
+        try {
+          this.hideLoading();
+          this.start();
+        } catch (error) {
+          this.handleError(error as Error);
+        }
+      }, 100);
 
       // Handle page visibility changes to pause/resume counter
       document.addEventListener('visibilitychange', () => {
+        this.isVisible = !document.hidden;
         if (document.hidden) {
           this.pause();
         } else {
@@ -280,10 +452,26 @@ const initialElapsedTime = calculateElapsedTime(START_TIMESTAMP, currentTimestam
         }
       });
 
+      // Handle focus/blur for additional performance optimization
+      window.addEventListener('focus', () => {
+        if (this.isVisible) this.resume();
+      });
+
+      window.addEventListener('blur', () => {
+        this.pause();
+      });
+
       // Clean up on page unload
       window.addEventListener('beforeunload', () => {
         this.stop();
       });
+
+      // Handle memory pressure events
+      if ('memory' in performance) {
+        window.addEventListener('beforeunload', () => {
+          this.cleanup();
+        });
+      }
     }
 
     private updateDisplay(elapsedTime: TimeElapsed): void {
@@ -347,12 +535,98 @@ const initialElapsedTime = calculateElapsedTime(START_TIMESTAMP, currentTimestam
 
     private tick(): void {
       try {
+        const now = Date.now();
+        
+        // Throttle updates to avoid excessive re-renders
+        if (now - this.lastUpdateTime < COUNTER_UPDATE_INTERVAL - 50) {
+          return;
+        }
+        
+        this.lastUpdateTime = now;
         const elapsedTime = this.calculateCurrentElapsedTime();
-        this.updateDisplay(elapsedTime);
+        
+        // Use requestAnimationFrame for smooth updates
+        if (this.rafId) {
+          cancelAnimationFrame(this.rafId);
+        }
+        
+        this.rafId = requestAnimationFrame(() => {
+          this.updateDisplay(elapsedTime);
+          this.rafId = null;
+        });
+        
+        // Reset error count on successful update
+        this.errorCount = 0;
       } catch (error) {
-        console.error('Counter update error:', error);
-        // Continue running even if there's an error
+        this.handleError(error as Error);
       }
+    }
+
+    private showLoading(): void {
+      if (this.elements.loadingOverlay) {
+        this.elements.loadingOverlay.setAttribute('aria-hidden', 'false');
+      }
+      if (this.elements.mainCounter) {
+        this.elements.mainCounter.style.opacity = '0.3';
+      }
+    }
+
+    private hideLoading(): void {
+      if (this.elements.loadingOverlay) {
+        this.elements.loadingOverlay.setAttribute('aria-hidden', 'true');
+      }
+      if (this.elements.mainCounter) {
+        this.elements.mainCounter.style.opacity = '1';
+      }
+    }
+
+    private showError(message: string): void {
+      if (this.elements.errorBoundary) {
+        this.elements.errorBoundary.setAttribute('aria-hidden', 'false');
+      }
+      if (this.elements.errorMessage) {
+        this.elements.errorMessage.textContent = message;
+      }
+      if (this.elements.mainCounter) {
+        this.elements.mainCounter.style.opacity = '0.3';
+      }
+    }
+
+    private hideError(): void {
+      if (this.elements.errorBoundary) {
+        this.elements.errorBoundary.setAttribute('aria-hidden', 'true');
+      }
+      if (this.elements.mainCounter) {
+        this.elements.mainCounter.style.opacity = '1';
+      }
+    }
+
+    private handleError(error: Error): void {
+      console.error('Counter error:', error);
+      this.errorCount++;
+      
+      if (this.errorCount >= this.maxRetries) {
+        this.showError(`Failed to update counter after ${this.maxRetries} attempts. ${error.message}`);
+        this.stop();
+      } else {
+        // Try to continue running for temporary errors
+        console.warn(`Counter error ${this.errorCount}/${this.maxRetries}, continuing...`);
+      }
+    }
+
+    private retry(): void {
+      this.hideError();
+      this.errorCount = 0;
+      this.showLoading();
+      
+      setTimeout(() => {
+        try {
+          this.hideLoading();
+          this.start();
+        } catch (error) {
+          this.handleError(error as Error);
+        }
+      }, 500);
     }
 
     public start(): void {
@@ -385,6 +659,27 @@ const initialElapsedTime = calculateElapsedTime(START_TIMESTAMP, currentTimestam
 
     public stop(): void {
       this.pause();
+      this.cleanup();
+    }
+
+    private cleanup(): void {
+      // Cancel any pending animation frames
+      if (this.rafId) {
+        cancelAnimationFrame(this.rafId);
+        this.rafId = null;
+      }
+      
+      // Clear interval
+      if (this.intervalId) {
+        clearInterval(this.intervalId);
+        this.intervalId = null;
+      }
+      
+      // Remove event listeners to prevent memory leaks
+      window.removeEventListener('focus', this.resume);
+      window.removeEventListener('blur', this.pause);
+      
+      this.isActive = false;
     }
   }
 
