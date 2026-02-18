@@ -1,0 +1,43 @@
+name: Capture Livestream Screenshot
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.52.0-noble
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install Playwright
+        run: bun install playwright
+
+      - name: Capture livestream frame
+        run: bun run scripts/capture-livestream.mjs
+
+      - name: Create release (first run only)
+        run: gh release create livestream --title "Livestream Screenshots" --notes "Auto-updated livestream capture" || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload screenshot to release
+        run: gh release upload livestream livestream.jpg --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Trigger site redeploy
+        run: gh api repos/${{ github.repository }}/dispatches -f event_type=livestream-update
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
