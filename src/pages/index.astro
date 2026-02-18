@@ -1,5 +1,5 @@
 ---
-
+import Changelog from '../components/Changelog.astro';
 ---
 
 <html lang="en">
@@ -66,6 +66,8 @@
 				</a>
 			</div>
 
+			<Changelog />
+
 			<footer class="footer">cccp.ps</footer>
 		</div>
 	</body>
@@ -87,7 +89,6 @@
 	body {
 		min-height: 100dvh;
 		display: flex;
-		align-items: center;
 		justify-content: center;
 		position: relative;
 		overflow-x: hidden;
@@ -125,6 +126,7 @@
 		padding: clamp(1.5rem, 5vw, 3rem);
 		max-width: 720px;
 		width: 100%;
+		margin-block: auto;
 		animation: fade-up 0.8s ease-out both;
 	}
 
