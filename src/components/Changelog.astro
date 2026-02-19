@@ -7,6 +7,7 @@ interface ChangelogEntry {
 	type: "current" | "update";
 }
 
+// biome-ignore lint/correctness/noUnusedVariables: used in Astro template below
 const entries: ChangelogEntry[] = [
 	{
 		date: "2026-02-18",
@@ -52,8 +53,9 @@ const entries: ChangelogEntry[] = [
 	},
 ];
 
+// biome-ignore lint/correctness/noUnusedVariables: used in Astro template below
 function formatDate(date: string, day: string): string {
-	const d = new Date(date + "T00:00:00");
+	const d = new Date(`${date}T00:00:00`);
 	const month = d.toLocaleString("en-US", { month: "short" }).toUpperCase();
 	const dayNum = d.getDate();
 	return `${month} ${dayNum} — ${day.toUpperCase()}`;
