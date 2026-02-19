@@ -6,34 +6,37 @@ const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam";
 	<hr class="live-divider" aria-hidden="true" />
 	<h2 class="live-heading">LIVE FEED</h2>
 
-	<div class="monitor">
-		<div class="monitor-hud" aria-hidden="true">
-			<span class="hud-rec" id="hud-rec">
-				<span class="rec-dot"></span>
-				REC
-			</span>
-			<span class="hud-label">GOODCAM</span>
+	<a href={STREAM_URL} target="_blank" rel="noopener noreferrer" class="monitor-link">
+		<div class="monitor">
+			<div class="monitor-hud" aria-hidden="true">
+				<span class="hud-rec" id="hud-rec">
+					<span class="rec-dot"></span>
+					REC
+				</span>
+				<span class="hud-label">GOODCAM</span>
+			</div>
+
+			<img
+				class="monitor-image"
+				id="live-image"
+				alt="Live camera screenshot from server room"
+				width="1280"
+				height="720"
+				loading="lazy"
+			/>
+
+			<div class="monitor-offline" id="monitor-offline">
+				<span class="offline-text">NO SIGNAL</span>
+			</div>
+
+			<div class="monitor-scanlines" aria-hidden="true"></div>
 		</div>
-
-		<img
-			class="monitor-image"
-			id="live-image"
-			alt="Live camera screenshot from server room"
-			width="1280"
-			height="720"
-			loading="lazy"
-		/>
-
-		<div class="monitor-offline" id="monitor-offline">
-			<span class="offline-text">NO SIGNAL</span>
-		</div>
-
-		<div class="monitor-scanlines" aria-hidden="true"></div>
-	</div>
+	</a>
 
 	<a href={STREAM_URL} target="_blank" rel="noopener noreferrer" class="stream-link">
 		Watch live stream &rarr;
 	</a>
+	<span class="last-updated" id="last-updated"></span>
 </section>
 
 <style>
@@ -73,8 +76,26 @@ const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam";
 		margin-bottom: 2rem;
 	}
 
+	/* Monitor link wrapper */
+	.monitor-link {
+		display: block;
+		text-decoration: none;
+		color: inherit;
+		border-radius: 4px;
+		transition: box-shadow 0.2s ease;
+	}
+
+	.monitor-link:hover {
+		box-shadow: 0 0 20px rgba(201, 67, 77, 0.15);
+	}
+
+	.monitor-link:hover .monitor {
+		border-color: #c9434d;
+	}
+
 	/* Monitor frame */
 	.monitor {
+		transition: border-color 0.2s ease;
 		position: relative;
 		background: #0d0d0e;
 		border: 1px solid #1a1a1d;
@@ -222,6 +243,17 @@ const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam";
 		transform: translateY(-1px);
 	}
 
+	/* Last-updated timestamp */
+	.last-updated {
+		display: block;
+		margin-top: 0.5rem;
+		font-family: 'JetBrains Mono', monospace;
+		font-size: 0.6rem;
+		color: #4a484f;
+		text-align: center;
+		letter-spacing: 0.05em;
+	}
+
 	/* Offline-mode HUD adjustments */
 	.hud-rec.offline .rec-dot {
 		background: #4a484f;
@@ -269,5 +301,27 @@ const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam";
 
 		loadImage();
 		setInterval(loadImage, REFRESH_INTERVAL);
+
+		// Fetch last-updated timestamp from GitHub Releases API
+		var updatedEl = document.getElementById('last-updated');
+		fetch('https://api.github.com/repos/cccp-ps/cccp-web/releases/tags/livestream')
+			.then(function (res) { return res.json(); })
+			.then(function (data) {
+				var assets = data.assets || [];
+				for (var i = 0; i < assets.length; i++) {
+					if (assets[i].name === 'livestream.jpg') {
+						var date = new Date(assets[i].updated_at);
+						updatedEl.textContent = 'Last captured: ' + date.toLocaleString(undefined, {
+							month: 'short',
+							day: 'numeric',
+							year: 'numeric',
+							hour: 'numeric',
+							minute: '2-digit'
+						});
+						break;
+					}
+				}
+			})
+			.catch(function () {});
 	})();
 </script>
