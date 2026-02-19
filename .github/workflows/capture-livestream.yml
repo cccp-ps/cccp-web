@@ -27,6 +27,14 @@ jobs:
       - name: Capture livestream frame
         run: bun run scripts/capture-livestream.mjs
 
+      - name: Upload debug screenshot
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: livestream-debug
+          path: livestream-debug.jpg
+          retention-days: 3
+
       - name: Create release (first run only)
         run: gh release create livestream --title "Livestream Screenshots" --notes "Auto-updated livestream capture" || true
         env:
