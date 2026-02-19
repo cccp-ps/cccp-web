@@ -273,7 +273,7 @@ const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam";
 	(function () {
 		// Use GitHub Releases asset CDN directly to save bandwidth and bypass local build cycles
 		var IMAGE_URL = 'https://github.com/cccp-ps/cccp-web/releases/download/livestream/livestream.jpg';
-		var METADATA_URL = 'https://github.com/cccp-ps/cccp-web/releases/download/livestream/metadata.json';
+		var METADATA_URL = 'https://api.github.com/repos/cccp-ps/cccp-web/releases/tags/livestream';
 		var REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 		var STALE_THRESHOLD_MS = 35 * 60 * 1000; // 35 minutes (~2+ missed cron jobs)
 
@@ -323,23 +323,28 @@ const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam";
 		}
 
 		function loadMetadata() {
-			// Fetch metadata.json from release assets instead of hitting rate-limited api.github.com
 			fetch(METADATA_URL + '?v=' + Date.now())
-				.then(function (res) { return res.json(); })
+				.then(function (res) {
+					if (!res.ok) throw new Error('HTTP ' + res.status);
+					return res.json();
+				})
 				.then(function (data) {
-					if (data.updated_at) {
-						var date = new Date(data.updated_at);
-						var ageMs = Date.now() - date.getTime();
-						
-						setStaleState(ageMs > STALE_THRESHOLD_MS);
+					if (data && data.assets) {
+						var asset = data.assets.find(function(a) { return a.name === 'livestream.jpg'; });
+						if (asset && asset.updated_at) {
+							var date = new Date(asset.updated_at);
+							var ageMs = Date.now() - date.getTime();
+							
+							setStaleState(ageMs > STALE_THRESHOLD_MS);
 
-						updatedEl.textContent = 'Last captured: ' + date.toLocaleString(undefined, {
-							month: 'short',
-							day: 'numeric',
-							year: 'numeric',
-							hour: 'numeric',
-							minute: '2-digit'
-						});
+							updatedEl.textContent = 'Last captured: ' + date.toLocaleString(undefined, {
+								month: 'short',
+								day: 'numeric',
+								year: 'numeric',
+								hour: 'numeric',
+								minute: '2-digit'
+							});
+						}
 					}
 				})
 				.catch(function (err) {
