@@ -12,47 +12,68 @@ REC
 Watch live stream &rarr;
 </a> <span class="last-updated" id="last-updated" data-astro-cid-2aby5vzx></span> </section>  <script>
 	(function () {
-		var IMAGE_URL = '/livestream.jpg';
+		// Use GitHub Releases asset CDN directly to save bandwidth and bypass local build cycles
+		var IMAGE_URL = 'https://github.com/cccp-ps/cccp-web/releases/download/livestream/livestream.jpg';
+		var METADATA_URL = 'https://github.com/cccp-ps/cccp-web/releases/download/livestream/metadata.json';
 		var REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+		var STALE_THRESHOLD_MS = 35 * 60 * 1000; // 35 minutes (~2+ missed cron jobs)
 
 		var img = document.getElementById('live-image');
 		var offline = document.getElementById('monitor-offline');
 		var rec = document.getElementById('hud-rec');
+		var label = document.querySelector('.hud-label');
+		var updatedEl = document.getElementById('last-updated');
+
+		function setStaleState(isStale) {
+			if (isStale) {
+				rec.classList.add('offline');
+				label.textContent = 'STALE DATA';
+				img.style.filter = 'grayscale(100%) brightness(0.7)';
+			} else {
+				rec.classList.remove('offline');
+				label.textContent = 'GOODCAM';
+				img.style.filter = 'none';
+			}
+		}
 
 		function loadImage() {
 			var url = IMAGE_URL + '?v=' + Date.now();
-			img.src = url;
+			
+			// Preload the new image into memory to avoid the black flicker when changing src
+			var tempImg = new Image();
+			
+			tempImg.onload = function() {
+				offline.classList.add('hidden');
+				img.src = tempImg.src;
+
+				// Trigger flicker effect
+				img.classList.remove('flicker');
+				void img.offsetWidth; // Force reflow
+				img.classList.add('flicker');
+			};
+
+			tempImg.onerror = function() {
+				// Only show offline if the component doesn't already have a valid image displayed
+				if (!img.getAttribute('src')) {
+					offline.classList.remove('hidden');
+					rec.classList.add('offline');
+				}
+			};
+
+			tempImg.src = url;
 		}
 
-		img.addEventListener('load', function () {
-			offline.classList.add('hidden');
-			rec.classList.remove('offline');
+		function loadMetadata() {
+			// Fetch metadata.json from release assets instead of hitting rate-limited api.github.com
+			fetch(METADATA_URL + '?v=' + Date.now())
+				.then(function (res) { return res.json(); })
+				.then(function (data) {
+					if (data.updated_at) {
+						var date = new Date(data.updated_at);
+						var ageMs = Date.now() - date.getTime();
+						
+						setStaleState(ageMs > STALE_THRESHOLD_MS);
 
-			// Trigger flicker effect
-			img.classList.remove('flicker');
-			// Force reflow to restart animation
-			void img.offsetWidth;
-			img.classList.add('flicker');
-		});
-
-		img.addEventListener('error', function () {
-			offline.classList.remove('hidden');
-			rec.classList.add('offline');
-			img.removeAttribute('src');
-		});
-
-		loadImage();
-		setInterval(loadImage, REFRESH_INTERVAL);
-
-		// Fetch last-updated timestamp from GitHub Releases API
-		var updatedEl = document.getElementById('last-updated');
-		fetch('https://api.github.com/repos/cccp-ps/cccp-web/releases/tags/livestream')
-			.then(function (res) { return res.json(); })
-			.then(function (data) {
-				var assets = data.assets || [];
-				for (var i = 0; i < assets.length; i++) {
-					if (assets[i].name === 'livestream.jpg') {
-						var date = new Date(assets[i].updated_at);
 						updatedEl.textContent = 'Last captured: ' + date.toLocaleString(undefined, {
 							month: 'short',
 							day: 'numeric',
@@ -60,11 +81,20 @@ Watch live stream &rarr;
 							hour: 'numeric',
 							minute: '2-digit'
 						});
-						break;
 					}
-				}
-			})
-			.catch(function () {});
+				})
+				.catch(function (err) {
+					console.error("Failed to load livestream metadata:", err);
+				});
+		}
+
+		function refresh() {
+			loadImage();
+			loadMetadata();
+		}
+
+		refresh();
+		setInterval(refresh, REFRESH_INTERVAL);
 	})();
 </script> <section class="changelog" aria-label="Status log" data-astro-cid-mpeq25e6> <hr class="changelog-divider" aria-hidden="true" data-astro-cid-mpeq25e6> <h2 class="changelog-heading" data-astro-cid-mpeq25e6>STATUS LOG</h2> <div class="timeline" role="list" data-astro-cid-mpeq25e6> <div class="timeline-entry is-current" role="listitem" style="animation-delay: 0.1s" data-astro-cid-mpeq25e6> <div class="timeline-marker" aria-hidden="true" data-astro-cid-mpeq25e6> <span class="timeline-dot dot-current" data-astro-cid-mpeq25e6></span> </div> <div class="timeline-content" data-astro-cid-mpeq25e6> <time class="timeline-date" datetime="2026-02-18" data-astro-cid-mpeq25e6>
 [FEB 18 — TUESDAY]
