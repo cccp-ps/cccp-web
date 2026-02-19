@@ -1,104 +1,103 @@
-import { chromium } from "playwright";
+import { spawn } from "child_process";
+import { writeFile, stat } from "fs/promises";
 
-// Force mode=mse to skip WebRTC ICE negotiation (times out in headless CI)
-const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam&mode=mse";
+// Connect directly to go2rtc WebSocket — bypasses browser codec limitations.
+// The camera sends H.265 (HEVC) which headless CI Chrome can't decode in MSE,
+// but FFmpeg handles it natively.
+const WS_URL = "wss://live.cccp.ps/api/ws?src=goodcam";
 const OUTPUT_PATH = "livestream.jpg";
-const TIMEOUT = 30_000;
+const COLLECT_SECONDS = 5;
+const TIMEOUT_MS = 30_000;
+
+// Request HEVC video + AAC audio — matches the camera's native codecs.
+// go2rtc's client JS normally filters these via MediaSource.isTypeSupported(),
+// which excludes HEVC on headless Linux Chrome. By connecting directly we skip that.
+const MSE_CODECS = "hvc1.1.6.L153.B0,mp4a.40.2";
 
 async function capture() {
-  const browser = await chromium.launch({
-    channel: "chrome",
-    headless: true,
-    args: [
-      "--autoplay-policy=no-user-gesture-required",
-      "--use-gl=angle",
-      "--use-angle=swiftshader",
-      "--disable-gpu-sandbox",
-    ],
+  console.log(`Connecting to ${WS_URL}`);
+
+  const ws = new WebSocket(WS_URL);
+  ws.binaryType = "arraybuffer";
+
+  const chunks = [];
+
+  const mp4Data = await new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      ws.close();
+      reject(new Error("Timeout waiting for stream data"));
+    }, TIMEOUT_MS);
+
+    ws.addEventListener("open", () => {
+      console.log("WebSocket connected, requesting MSE stream...");
+      ws.send(JSON.stringify({ type: "mse", value: MSE_CODECS }));
+    });
+
+    ws.addEventListener("message", (event) => {
+      if (typeof event.data === "string") {
+        const msg = JSON.parse(event.data);
+        console.log("Server:", JSON.stringify(msg));
+
+        if (msg.type === "mse") {
+          console.log(`MIME type: ${msg.value}`);
+          // Collect fMP4 segments for a few seconds then stop
+          setTimeout(() => ws.close(), COLLECT_SECONDS * 1000);
+        } else if (msg.type === "error") {
+          ws.close();
+          reject(new Error(`go2rtc error: ${msg.value}`));
+        }
+      } else {
+        // Binary fMP4 data (init segment + media segments)
+        chunks.push(Buffer.from(event.data));
+      }
+    });
+
+    ws.addEventListener("close", () => {
+      clearTimeout(timeout);
+      if (chunks.length === 0) {
+        reject(new Error("No video data received — stream may be offline"));
+        return;
+      }
+      resolve(Buffer.concat(chunks));
+    });
+
+    ws.addEventListener("error", (event) => {
+      clearTimeout(timeout);
+      reject(new Error(`WebSocket error: ${event.message || "connection failed"}`));
+    });
   });
-  const page = await browser.newPage({ viewport: { width: 1280, height: 720 } });
 
-  // Capture page console messages for CI debugging
-  const consoleLogs = [];
-  page.on("console", (msg) => consoleLogs.push(`[${msg.type()}] ${msg.text()}`));
-  page.on("pageerror", (err) => consoleLogs.push(`[pageerror] ${err.message}`));
+  console.log(`Received ${mp4Data.length} bytes (${chunks.length} segments)`);
 
-  try {
-    await page.goto(STREAM_URL, { waitUntil: "domcontentloaded", timeout: TIMEOUT });
+  // Write fMP4 to temp file
+  const tmpPath = "/tmp/livestream-raw.mp4";
+  await writeFile(tmpPath, mp4Data);
 
-    // Wait for a <video> element to appear (go2rtc's <video-stream> renders one internally)
-    const video = await page.waitForSelector("video", { timeout: TIMEOUT }).catch(() => null);
+  // Extract first video frame with FFmpeg
+  await new Promise((resolve, reject) => {
+    const ffmpeg = spawn(
+      "ffmpeg",
+      ["-y", "-i", tmpPath, "-frames:v", "1", "-q:v", "2", OUTPUT_PATH],
+      { stdio: ["ignore", "pipe", "pipe"] }
+    );
 
-    if (!video) {
-      await page.screenshot({ path: OUTPUT_PATH, type: "jpeg", quality: 85, fullPage: false });
-      console.log("No video element found — captured full page fallback:", OUTPUT_PATH);
-      return;
-    }
+    let stderr = "";
+    ffmpeg.stderr.on("data", (d) => {
+      stderr += d.toString();
+    });
 
-    // Log initial video state for CI debugging
-    const initialState = await video.evaluate((el) => ({
-      readyState: el.readyState,
-      currentTime: el.currentTime,
-      paused: el.paused,
-      videoWidth: el.videoWidth,
-      videoHeight: el.videoHeight,
-      error: el.error ? el.error.message : null,
-      networkState: el.networkState,
-      src: el.currentSrc || el.src,
-    }));
-    console.log("Video initial state:", JSON.stringify(initialState, null, 2));
+    ffmpeg.on("close", (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        console.error("FFmpeg stderr:", stderr);
+        reject(new Error(`FFmpeg exited with code ${code}`));
+      }
+    });
+  });
 
-    // Wait for actual frame decode — not just readyState
-    try {
-      await page.waitForFunction(
-        (el) => {
-          if (el.readyState < 2) return false;
-          if (el.paused) return false;
-          if (el.currentTime <= 0) return false;
-          if (el.videoWidth === 0 || el.videoHeight === 0) return false;
-          return true;
-        },
-        video,
-        { timeout: TIMEOUT }
-      );
-    } catch {
-      // Dump diagnostics on timeout
-      const finalState = await video.evaluate((el) => ({
-        readyState: el.readyState,
-        currentTime: el.currentTime,
-        paused: el.paused,
-        videoWidth: el.videoWidth,
-        videoHeight: el.videoHeight,
-        error: el.error ? el.error.message : null,
-        networkState: el.networkState,
-        src: el.currentSrc || el.src,
-      }));
-      console.error("Video wait timed out. Final state:", JSON.stringify(finalState, null, 2));
-      console.error("Page console logs:", consoleLogs.join("\n"));
-      await page.screenshot({ path: "livestream-debug.jpg", type: "jpeg", quality: 85, fullPage: true });
-      console.error("Saved diagnostic screenshot: livestream-debug.jpg");
-      throw new Error("Video never reached playable state — stream may be offline");
-    }
-
-    // Log ready state
-    const readyState = await video.evaluate((el) => ({
-      readyState: el.readyState,
-      currentTime: el.currentTime,
-      paused: el.paused,
-      videoWidth: el.videoWidth,
-      videoHeight: el.videoHeight,
-      error: el.error ? el.error.message : null,
-    }));
-    console.log("Video ready state:", JSON.stringify(readyState, null, 2));
-
-    // Let compositor paint the decoded frame
-    await page.waitForTimeout(2000);
-
-    await video.screenshot({ path: OUTPUT_PATH, type: "jpeg", quality: 85 });
-    console.log("Captured video element screenshot:", OUTPUT_PATH);
-  } finally {
-    await browser.close();
-  }
+  const { size } = await stat(OUTPUT_PATH);
+  console.log(`Captured: ${OUTPUT_PATH} (${size} bytes)`);
 }
 
 capture().catch((err) => {

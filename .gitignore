@@ -17,6 +17,10 @@ pnpm-debug.log*
 .env
 .env.production
 
+# capture script artifacts
+livestream.jpg
+livestream-debug.jpg
+
 # macOS-specific files
 .DS_Store
 
