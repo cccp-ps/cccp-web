@@ -1,17 +1,17 @@
 import { spawn } from "child_process";
 import { writeFile, stat } from "fs/promises";
 
-// Connect directly to go2rtc WebSocket — bypasses browser codec limitations.
-// The camera sends H.265 (HEVC) which headless CI Chrome can't decode in MSE,
-// but FFmpeg handles it natively.
-const WS_URL = "wss://live.cccp.ps/api/ws?src=goodcam";
+interface Go2RtcMessage {
+  type: string;
+  value: string;
+}
+
+const WS_URL = process.env.WS_URL || "wss://live.cccp.ps/api/ws?src=goodcam";
 const OUTPUT_PATH = "livestream.jpg";
-const COLLECT_SECONDS = 5;
+const COLLECT_SECONDS = 2; // Reduced to 2s to optimize speed
 const TIMEOUT_MS = 30_000;
 
-// Request HEVC video + AAC audio — matches the camera's native codecs.
-// go2rtc's client JS normally filters these via MediaSource.isTypeSupported(),
-// which excludes HEVC on headless Linux Chrome. By connecting directly we skip that.
+// Request HEVC video + AAC audio
 const MSE_CODECS = "hvc1.1.6.L153.B0,mp4a.40.2";
 
 async function capture() {
@@ -20,9 +20,10 @@ async function capture() {
   const ws = new WebSocket(WS_URL);
   ws.binaryType = "arraybuffer";
 
-  const chunks = [];
+  const chunks: Buffer[] = [];
 
-  const mp4Data = await new Promise((resolve, reject) => {
+  console.time("socket");
+  const mp4Data = await new Promise<Buffer>((resolve, reject) => {
     const timeout = setTimeout(() => {
       ws.close();
       reject(new Error("Timeout waiting for stream data"));
@@ -35,7 +36,7 @@ async function capture() {
 
     ws.addEventListener("message", (event) => {
       if (typeof event.data === "string") {
-        const msg = JSON.parse(event.data);
+        const msg = JSON.parse(event.data) as Go2RtcMessage;
         console.log("Server:", JSON.stringify(msg));
 
         if (msg.type === "mse") {
@@ -48,7 +49,7 @@ async function capture() {
         }
       } else {
         // Binary fMP4 data (init segment + media segments)
-        chunks.push(Buffer.from(event.data));
+        chunks.push(Buffer.from(event.data as ArrayBuffer));
       }
     });
 
@@ -61,11 +62,13 @@ async function capture() {
       resolve(Buffer.concat(chunks));
     });
 
-    ws.addEventListener("error", (event) => {
+    ws.addEventListener("error", (event: Event) => {
       clearTimeout(timeout);
-      reject(new Error(`WebSocket error: ${event.message || "connection failed"}`));
+      const msg = "message" in event ? (event as ErrorEvent).message : "connection failed";
+      reject(new Error(`WebSocket error: ${msg}`));
     });
   });
+  console.timeEnd("socket");
 
   console.log(`Received ${mp4Data.length} bytes (${chunks.length} segments)`);
 
@@ -73,11 +76,13 @@ async function capture() {
   const tmpPath = "/tmp/livestream-raw.mp4";
   await writeFile(tmpPath, mp4Data);
 
+  console.time("ffmpeg");
   // Extract first video frame with FFmpeg
-  await new Promise((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     const ffmpeg = spawn(
       "ffmpeg",
-      ["-y", "-i", tmpPath, "-frames:v", "1", "-q:v", "2", OUTPUT_PATH],
+      // Optimization: `-skip_frame nokey` to ensure we get an I-frame, `-vframes 1` is cleaner than `-frames:v 1`
+      ["-y", "-skip_frame", "nokey", "-i", tmpPath, "-q:v", "2", "-vframes", "1", OUTPUT_PATH],
       { stdio: ["ignore", "pipe", "pipe"] }
     );
 
@@ -95,8 +100,13 @@ async function capture() {
       }
     });
   });
+  console.timeEnd("ffmpeg");
 
   const { size } = await stat(OUTPUT_PATH);
+  // Guarantee data integrity by failing the Action if output is less than 2KB (corrupt/gray image)
+  if (size < 2048) {
+    throw new Error(`Image size dangerously low (${size} bytes). Assuming corruption.`);
+  }
   console.log(`Captured: ${OUTPUT_PATH} (${size} bytes)`);
 }
 
