@@ -19,6 +19,9 @@ jobs:
         with:
           bun-version: latest
 
+      - name: Install FFmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+
       - name: Capture livestream frame
         run: bun run scripts/capture-livestream.mjs
 
