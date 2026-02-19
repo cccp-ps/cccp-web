@@ -8,7 +8,6 @@ interface Go2RtcMessage {
 
 const WS_URL = process.env.WS_URL || "wss://live.cccp.ps/api/ws?src=goodcam";
 const OUTPUT_PATH = "livestream.jpg";
-const COLLECT_SECONDS = 2; // Reduced to 2s to optimize speed
 const TIMEOUT_MS = 30_000;
 
 // Request HEVC video + AAC audio
@@ -41,8 +40,6 @@ async function capture() {
 
         if (msg.type === "mse") {
           console.log(`MIME type: ${msg.value}`);
-          // Collect fMP4 segments for a few seconds then stop
-          setTimeout(() => ws.close(), COLLECT_SECONDS * 1000);
         } else if (msg.type === "error") {
           ws.close();
           reject(new Error(`go2rtc error: ${msg.value}`));
@@ -50,6 +47,12 @@ async function capture() {
       } else {
         // Binary fMP4 data (init segment + media segments)
         chunks.push(Buffer.from(event.data as ArrayBuffer));
+        
+        // The first chunk is typically the init segment.
+        // We wait for at least a couple of media segments (total >= 3) to ensure we get an I-frame.
+        if (chunks.length >= 3) {
+          ws.close();
+        }
       }
     });
 
