@@ -1,0 +1,117 @@
+---
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const {
+	// biome-ignore lint/correctness/noUnusedVariables: used in Astro template below
+	title,
+	// biome-ignore lint/correctness/noUnusedVariables: used in Astro template below
+	description = "CCCP.PS media server is currently offline for maintenance.",
+} = Astro.props;
+
+// biome-ignore lint/correctness/noUnusedImports: used in Astro template below
+import Header from "../components/Header.astro";
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/cccp-logo.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+	</head>
+	<body>
+		<Header />
+		<main class="page-container">
+			<slot />
+		</main>
+		<footer class="footer">cccp.ps</footer>
+	</body>
+</html>
+
+<style is:global>
+	* {
+		margin: 0;
+		padding: 0;
+		box-sizing: border-box;
+	}
+
+	html {
+		font-family: 'JetBrains Mono', monospace;
+		color: #e8e6e3;
+		background: #0a0a0b;
+	}
+
+	body {
+		min-height: 100dvh;
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		overflow-x: hidden;
+	}
+
+	/* Vignette */
+	body::before {
+		content: '';
+		position: fixed;
+		inset: 0;
+		background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	/* Film grain */
+	body::after {
+		content: '';
+		position: fixed;
+		inset: 0;
+		opacity: 0.03;
+		pointer-events: none;
+		z-index: 2;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+		background-repeat: repeat;
+	}
+
+	.page-container {
+		position: relative;
+		z-index: 3;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		padding: clamp(1.5rem, 5vw, 3rem);
+		max-width: 720px;
+		width: 100%;
+		margin: 0 auto;
+		flex-grow: 1;
+		animation: fade-up 0.8s ease-out both;
+	}
+
+	.footer {
+		position: relative;
+		z-index: 3;
+		font-size: 0.7rem;
+		color: #4a484f;
+		letter-spacing: 0.1em;
+		text-align: center;
+		padding: 2rem;
+		margin-top: auto;
+	}
+
+	@keyframes fade-up {
+		from {
+			opacity: 0;
+			transform: translateY(16px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+</style>

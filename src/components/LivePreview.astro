@@ -4,9 +4,6 @@ const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam";
 ---
 
 <section class="live-preview" aria-label="Live camera feed">
-	<hr class="live-divider" aria-hidden="true" />
-	<h2 class="live-heading">LIVE FEED</h2>
-
 	<a href={STREAM_URL} target="_blank" rel="noopener noreferrer" class="monitor-link">
 		<div class="monitor">
 			<div class="monitor-hud" aria-hidden="true">
@@ -48,6 +45,9 @@ const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam";
 		margin-bottom: 2rem;
 		animation: fade-up 0.8s ease-out both;
 		animation-delay: 0.1s;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	@keyframes fade-up {
@@ -59,22 +59,6 @@ const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam";
 			opacity: 1;
 			transform: translateY(0);
 		}
-	}
-
-	.live-divider {
-		border: none;
-		border-top: 1px solid #1a1a1d;
-		margin-bottom: 2rem;
-	}
-
-	.live-heading {
-		font-family: 'Bebas Neue', sans-serif;
-		font-size: clamp(1.2rem, 3vw, 1.6rem);
-		font-weight: 400;
-		letter-spacing: 0.2em;
-		color: #4a484f;
-		text-align: center;
-		margin-bottom: 2rem;
 	}
 
 	/* Monitor link wrapper */

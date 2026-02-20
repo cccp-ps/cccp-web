@@ -1,5 +1,8 @@
 ---
-interface ChangelogEntry {
+// biome-ignore lint/correctness/noUnusedImports: used in Astro template below
+import Layout from "../layouts/Layout.astro";
+
+interface NewsEntry {
 	date: string;
 	day: string;
 	title: string;
@@ -8,7 +11,7 @@ interface ChangelogEntry {
 }
 
 // biome-ignore lint/correctness/noUnusedVariables: used in Astro template below
-const entries: ChangelogEntry[] = [
+const entries: NewsEntry[] = [
 	{
 		date: "2026-02-18",
 		day: "Tuesday",
@@ -62,54 +65,56 @@ function formatDate(date: string, day: string): string {
 }
 ---
 
-<section class="changelog" aria-label="Status log">
-	<hr class="changelog-divider" aria-hidden="true" />
-	<h2 class="changelog-heading">STATUS LOG</h2>
+<Layout title="CCCP.PS — News">
+	<section class="news" aria-label="News">
+		<h1 class="page-title">NEWS</h1>
+		<hr class="news-divider" aria-hidden="true" />
 
-	<div class="timeline" role="list">
-		{entries.map((entry, i) => (
-			<div
-				class:list={["timeline-entry", { "is-current": entry.type === "current" }]}
-				role="listitem"
-				style={`animation-delay: ${0.1 + i * 0.08}s`}
-			>
-				<div class="timeline-marker" aria-hidden="true">
-					<span class:list={["timeline-dot", { "dot-current": entry.type === "current" }]} />
+		<div class="timeline" role="list">
+			{entries.map((entry, i) => (
+				<div
+					class:list={["timeline-entry", { "is-current": entry.type === "current" }]}
+					role="listitem"
+					style={`animation-delay: ${0.1 + i * 0.08}s`}
+				>
+					<div class="timeline-marker" aria-hidden="true">
+						<span class:list={["timeline-dot", { "dot-current": entry.type === "current" }]} />
+					</div>
+					<div class="timeline-content">
+						<time class="timeline-date" datetime={entry.date}>
+							[{formatDate(entry.date, entry.day)}]
+						</time>
+						<h2 class="timeline-title">{entry.title}</h2>
+						<p class="timeline-body">{entry.body}</p>
+					</div>
 				</div>
-				<div class="timeline-content">
-					<time class="timeline-date" datetime={entry.date}>
-						[{formatDate(entry.date, entry.day)}]
-					</time>
-					<h3 class="timeline-title">{entry.title}</h3>
-					<p class="timeline-body">{entry.body}</p>
-				</div>
-			</div>
-		))}
-	</div>
-</section>
+			))}
+		</div>
+	</section>
+</Layout>
 
 <style>
-	.changelog {
+	.news {
 		width: 100%;
-		max-width: 540px;
+		max-width: 600px;
 		margin-top: 1rem;
 		margin-bottom: 2rem;
 	}
 
-	.changelog-divider {
-		border: none;
-		border-top: 1px solid #1a1a1d;
-		margin-bottom: 2rem;
+	.page-title {
+		font-family: 'Bebas Neue', sans-serif;
+		font-size: clamp(2rem, 5vw, 3rem);
+		letter-spacing: 0.25em;
+		font-weight: 400;
+		color: #e8e6e3;
+		text-align: center;
+		margin-bottom: 1rem;
 	}
 
-	.changelog-heading {
-		font-family: 'Bebas Neue', sans-serif;
-		font-size: clamp(1.2rem, 3vw, 1.6rem);
-		font-weight: 400;
-		letter-spacing: 0.2em;
-		color: #4a484f;
-		text-align: center;
-		margin-bottom: 2rem;
+	.news-divider {
+		border: none;
+		border-top: 1px solid #1a1a1d;
+		margin-bottom: 3rem;
 	}
 
 	.timeline {
@@ -131,8 +136,8 @@ function formatDate(date: string, day: string): string {
 	.timeline-entry {
 		position: relative;
 		display: flex;
-		gap: 1rem;
-		padding-bottom: 1.75rem;
+		gap: 1.5rem;
+		padding-bottom: 2.5rem;
 		animation: fade-up 0.5s ease-out both;
 	}
 
@@ -190,23 +195,23 @@ function formatDate(date: string, day: string): string {
 
 	.timeline-date {
 		display: block;
-		font-size: 0.65rem;
+		font-size: 0.7rem;
 		letter-spacing: 0.12em;
 		color: #4a484f;
-		margin-bottom: 0.3rem;
+		margin-bottom: 0.5rem;
 		font-family: 'JetBrains Mono', monospace;
 	}
 
 	.timeline-title {
 		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.8rem;
+		font-size: 1rem;
 		font-weight: 500;
 		color: #7a7880;
-		margin-bottom: 0.35rem;
+		margin-bottom: 0.5rem;
 	}
 
 	.timeline-body {
-		font-size: 0.75rem;
+		font-size: 0.85rem;
 		line-height: 1.65;
 		color: #5a585f;
 	}
@@ -217,12 +222,12 @@ function formatDate(date: string, day: string): string {
 	}
 
 	.is-current .timeline-body {
-		color: #7a7880;
+		color: #e8e6e3;
 	}
 
 	.is-current .timeline-content {
-		padding-left: 0.75rem;
-		border-left: 2px solid rgba(201, 67, 77, 0.3);
+		padding-left: 1rem;
+		border-left: 2px solid rgba(201, 67, 77, 0.5);
 	}
 
 	/* Reduced motion */
