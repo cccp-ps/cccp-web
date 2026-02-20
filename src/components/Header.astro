@@ -11,8 +11,10 @@ const currentPath = pathname.slice(1);
 		</a>
 		<nav class="nav">
 			<a href="/" class:list={["nav-link", { active: currentPath === "" }]}>Home</a>
-			<a href="/news" class:list={["nav-link", { active: currentPath === "news" || currentPath === "news/" }]}>News</a>
-		</nav>
+							<a href="/news" class:list={["nav-link", "news-link", { active: currentPath === "news" || currentPath === "news/" }]}>
+								News
+								<svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M7 17l9.2-9.2M17 16.8V7H7.2"/></svg>
+							</a>		</nav>
 	</div>
 </header>
 
@@ -96,5 +98,24 @@ const currentPath = pathname.slice(1);
 		height: 2px;
 		background: #c9434d;
 		box-shadow: 0 0 8px rgba(201, 67, 77, 0.5);
+	}
+
+	.news-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.3rem;
+	}
+
+	.nav-icon {
+		width: 14px;
+		height: 14px;
+		stroke: currentColor;
+		opacity: 0.6;
+		transition: transform 0.2s ease, opacity 0.2s ease;
+	}
+
+	.news-link:hover .nav-icon {
+		opacity: 1;
+		transform: translate(2px, -2px);
 	}
 </style>

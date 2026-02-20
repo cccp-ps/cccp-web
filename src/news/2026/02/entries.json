@@ -1,0 +1,44 @@
+[
+  {
+    "date": "2026-02-18",
+    "day": "Tuesday",
+    "title": "Current Status",
+    "body": "ETA for services coming back online is late Friday or Saturday. Maybe even Sunday. I'm sorry friends :).",
+    "type": "current"
+  },
+  {
+    "date": "2026-02-18",
+    "day": "Tuesday",
+    "title": "Docker Compose & Network Tuning",
+    "body": "Finalized Docker Compose configurations for the full *arr stack. Tuned bridge networking and DNS resolution. All containers pulling and launching cleanly.",
+    "type": "update"
+  },
+  {
+    "date": "2026-02-17",
+    "day": "Monday",
+    "title": "Ubuntu VM & Security Hardening",
+    "body": "Provisioned Ubuntu Server VM on Unraid. Configured SSH hardening, firewall rules, and fail2ban. Migrated from authentik to TinyAuth reverse-proxy authentication layer.",
+    "type": "update"
+  },
+  {
+    "date": "2026-02-16",
+    "day": "Sunday",
+    "title": "Unraid Host Setup & Research",
+    "body": "Completed Unraid host configuration — shares, cache pools, parity check. Spun up initial Ubuntu VM. Spent time researching best practices for Docker-on-VM vs bare-metal containers.",
+    "type": "update"
+  },
+  {
+    "date": "2026-02-15",
+    "day": "Saturday",
+    "title": "Physical Migration to Supermicro SC847",
+    "body": "Moved all drives and parts into the new Supermicro SC847 chassis. Debugged HBA card passthrough issues — reseated cards and updated firmware. All 24 bays now recognized.",
+    "type": "update"
+  },
+  {
+    "date": "2026-02-14",
+    "day": "Friday",
+    "title": "Backups & Boot Drive Prep",
+    "body": "Ran full backups of Plex metadata, databases, and *arr configurations. Prepared Unraid USB boot drive and validated license. Server taken offline.",
+    "type": "update"
+  }
+]
