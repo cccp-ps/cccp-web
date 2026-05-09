@@ -19,7 +19,7 @@ const METADATA_URL = "https://api.github.com/repos/cccp-ps/cccp-web/releases/tag
 		target="_blank"
 		rel="noopener noreferrer"
 		class="group block rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
-		aria-label="Open the GOODCAM live stream in a new tab"
+		aria-label="Open the live feed in a new tab"
 	>
 		<div class="relative aspect-video overflow-hidden rounded-md border border-border bg-card shadow-[0_28px_90px_rgba(0,0,0,0.42)] transition group-hover:border-ring">
 			<div class="pointer-events-none absolute inset-x-0 top-0 z-[3] flex justify-between p-3 sm:p-4" aria-hidden="true">
@@ -28,7 +28,7 @@ const METADATA_URL = "https://api.github.com/repos/cccp-ps/cccp-web/releases/tag
 					REC
 				</span>
 				<span class="inline-flex items-center rounded-sm bg-background/75 px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-foreground backdrop-blur" data-feed-label>
-					GOODCAM
+					Live Feed
 				</span>
 			</div>
 
@@ -141,7 +141,7 @@ const METADATA_URL = "https://api.github.com/repos/cccp-ps/cccp-web/releases/tag
 
 		function setStaleState(isStale) {
 			img.classList.toggle('stale', isStale);
-			label.textContent = isStale ? 'STALE DATA' : 'GOODCAM';
+			label.textContent = isStale ? 'STALE DATA' : 'Live Feed';
 		}
 
 		function setImage(url) {
