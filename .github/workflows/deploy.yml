@@ -11,6 +11,8 @@ jobs:
   deploy:
     if: ${{ github.event_name == 'repository_dispatch' || !contains(github.event.head_commit.message, '[skip ci]') }}
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout code
@@ -25,7 +27,9 @@ jobs:
         run: bun install
 
       - name: Download livestream screenshot
-        run: gh release download livestream --pattern "livestream.jpg" --dir ./public/ || echo "No livestream screenshot available yet"
+        run: |
+          mkdir -p ./public
+          gh release download livestream --pattern "livestream.jpg" --dir ./public/ || echo "No livestream screenshot available yet"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
