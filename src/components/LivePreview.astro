@@ -1,339 +1,199 @@
 ---
-// biome-ignore lint/correctness/noUnusedVariables: used in Astro template below
 const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam";
+const LOCAL_IMAGE_URL = "/livestream.jpg";
+const RELEASE_IMAGE_URL =
+	"https://github.com/cccp-ps/cccp-web/releases/download/livestream/livestream.jpg";
+const METADATA_URL = "https://api.github.com/repos/cccp-ps/cccp-web/releases/tags/livestream";
 ---
 
-<section class="live-preview" aria-label="Live camera feed">
-	<a href={STREAM_URL} target="_blank" rel="noopener noreferrer" class="monitor-link">
-		<div class="monitor">
-			<div class="monitor-hud" aria-hidden="true">
-				<span class="hud-rec" id="hud-rec">
-					<span class="rec-dot"></span>
+<section
+	class="w-full max-w-5xl"
+	aria-label="Live camera feed"
+	data-live-preview
+	data-local-src={LOCAL_IMAGE_URL}
+	data-release-src={RELEASE_IMAGE_URL}
+	data-metadata-src={METADATA_URL}
+>
+	<a
+		href={STREAM_URL}
+		target="_blank"
+		rel="noopener noreferrer"
+		class="group block rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+		aria-label="Open the live feed in a new tab"
+	>
+		<div class="relative aspect-video overflow-hidden rounded-md border border-border bg-card shadow-[0_28px_90px_rgba(0,0,0,0.42)] transition group-hover:border-ring">
+			<div class="pointer-events-none absolute inset-x-0 top-0 z-[3] flex justify-between p-3 sm:p-4" aria-hidden="true">
+				<span class="inline-flex items-center gap-2 rounded-sm bg-background/75 px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-foreground backdrop-blur" data-rec>
+					<span class="h-1.5 w-1.5 rounded-full bg-[#c9434d] motion-safe:animate-pulse" data-rec-dot></span>
 					REC
 				</span>
-				<span class="hud-label">GOODCAM</span>
+				<span class="inline-flex items-center rounded-sm bg-background/75 px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-foreground backdrop-blur" data-feed-label>
+					Live Feed
+				</span>
 			</div>
 
 			<img
-				class="monitor-image"
-				id="live-image"
-				alt="Live camera screenshot from server room"
+				class="block h-full w-full object-cover opacity-0 transition-opacity duration-200"
+				data-live-image
+				src={LOCAL_IMAGE_URL}
+				alt="Live camera screenshot from the CCCP.PS server room"
 				width="1280"
 				height="720"
-				loading="lazy"
+				loading="eager"
+				decoding="async"
+				fetchpriority="high"
 			/>
 
-			<div class="monitor-offline" id="monitor-offline">
-				<span class="offline-text">NO SIGNAL</span>
+			<div class="absolute inset-0 z-[1] flex items-center justify-center bg-card" data-offline>
+				<span class="relative font-[Bebas_Neue] text-[clamp(1.8rem,6vw,4rem)] tracking-[0.28em] text-muted-foreground">NO SIGNAL</span>
 			</div>
 
-			<div class="monitor-scanlines" aria-hidden="true"></div>
+			<div class="pointer-events-none absolute inset-0 z-[4] bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,0,0,0.12)_2px,rgba(0,0,0,0.12)_4px)] opacity-35" aria-hidden="true"></div>
+			<div class="pointer-events-none absolute inset-0 z-[4] bg-[radial-gradient(circle_at_50%_45%,transparent_55%,rgba(0,0,0,0.44)_100%)]" aria-hidden="true"></div>
 		</div>
 	</a>
 
-	<a href={STREAM_URL} target="_blank" rel="noopener noreferrer" class="stream-link">
-		Watch live stream &rarr;
-	</a>
-	<span class="last-updated" id="last-updated"></span>
+	<div class="mt-3 flex flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left">
+		<a
+			href={STREAM_URL}
+			target="_blank"
+			rel="noopener noreferrer"
+			class="inline-flex items-center gap-2 rounded-md border border-border bg-secondary/80 px-3 py-2 text-[0.72rem] font-bold uppercase tracking-[0.12em] text-secondary-foreground transition hover:border-ring hover:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+		>
+			Open live view
+			<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+		</a>
+		<span class="text-[0.68rem] uppercase tracking-[0.12em] text-muted-foreground" data-last-updated aria-live="polite"></span>
+	</div>
 </section>
 
-<style>
-	.live-preview {
-		width: 100%;
-		max-width: 540px;
-		margin-top: 0;
-		margin-bottom: 2rem;
-		animation: fade-up 0.8s ease-out both;
-		animation-delay: 0.1s;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-	}
-
-	@keyframes fade-up {
-		from {
-			opacity: 0;
-			transform: translateY(12px);
-		}
-		to {
+<noscript>
+	<style>
+		[data-live-image] {
 			opacity: 1;
-			transform: translateY(0);
 		}
+
+		[data-offline] {
+			display: none;
+		}
+	</style>
+</noscript>
+
+<style>
+	[data-live-image].flicker {
+		animation: cctv-flicker 0.2s ease-out;
 	}
 
-	/* Monitor link wrapper */
-	.monitor-link {
-		display: block;
-		text-decoration: none;
-		color: inherit;
-		border-radius: 4px;
-		transition: box-shadow 0.2s ease;
+	[data-live-image].stale {
+		filter: grayscale(100%) brightness(0.7);
 	}
 
-	.monitor-link:hover {
-		box-shadow: 0 0 20px rgba(201, 67, 77, 0.15);
-	}
-
-	.monitor-link:hover .monitor {
-		border-color: #c9434d;
-	}
-
-	/* Monitor frame */
-	.monitor {
-		transition: border-color 0.2s ease;
-		position: relative;
-		background: #0d0d0e;
-		border: 1px solid #1a1a1d;
-		border-radius: 4px;
-		box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
-		overflow: hidden;
-		aspect-ratio: 16 / 9;
-	}
-
-	/* HUD overlay */
-	.monitor-hud {
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		display: flex;
-		justify-content: space-between;
-		padding: 0.5rem 0.6rem;
-		z-index: 3;
-		pointer-events: none;
-	}
-
-	.hud-rec,
-	.hud-label {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35rem;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.6rem;
-		letter-spacing: 0.15em;
-		color: #e8e6e3;
-		background: rgba(0, 0, 0, 0.6);
-		padding: 0.3rem 0.6rem;
-		border-radius: 2px;
-	}
-
-	.rec-dot {
-		display: block;
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: #c9434d;
-		animation: pulse-dot 2s ease-in-out infinite;
-	}
-
-	@keyframes pulse-dot {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.3; }
-	}
-
-	/* Image */
-	.monitor-image {
-		display: block;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.monitor-image[src] {
-		position: relative;
-		z-index: 1;
-	}
-
-	/* Offline state */
-	.monitor-offline {
-		position: absolute;
-		inset: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		z-index: 1;
-	}
-
-	/* Film grain texture behind text */
-	.monitor-offline::before {
-		content: '';
-		position: absolute;
-		inset: 0;
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-		background-repeat: repeat;
-		opacity: 0.15;
-	}
-
-	.monitor-offline.hidden {
-		display: none;
-	}
-
-	.offline-text {
-		position: relative;
-		font-family: 'Bebas Neue', sans-serif;
-		font-size: clamp(1.4rem, 4vw, 2rem);
-		letter-spacing: 0.3em;
-		color: #4a484f;
-	}
-
-	/* CRT scanlines */
-	.monitor-scanlines {
-		position: absolute;
-		inset: 0;
-		background: repeating-linear-gradient(
-			0deg,
-			transparent,
-			transparent 2px,
-			rgba(0, 0, 0, 0.08) 2px,
-			rgba(0, 0, 0, 0.08) 4px
-		);
-		opacity: 0.4;
-		pointer-events: none;
-		z-index: 4;
-	}
-
-	/* Flicker animation on image refresh */
 	@keyframes cctv-flicker {
 		0% { opacity: 1; }
 		30% { opacity: 0.7; }
 		100% { opacity: 1; }
 	}
 
-	.monitor-image.flicker {
-		animation: cctv-flicker 0.2s ease-out;
-	}
-
-	/* Stream link */
-	.stream-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.4rem;
-		margin-top: 1rem;
-		padding: 0.45rem 1rem;
-		border-radius: 999px;
-		border: 1px solid #1a1a1d;
-		background: #111113;
-		color: #7a7880;
-		text-decoration: none;
-		font-size: 0.7rem;
-		font-family: 'JetBrains Mono', monospace;
-		letter-spacing: 0.05em;
-		transition: all 0.2s ease;
-	}
-
-	.stream-link:hover {
-		border-color: #c9434d;
-		color: #e8e6e3;
-		box-shadow: 0 0 16px rgba(201, 67, 77, 0.15);
-		transform: translateY(-1px);
-	}
-
-	/* Last-updated timestamp */
-	.last-updated {
-		display: block;
-		margin-top: 0.5rem;
-		font-family: 'JetBrains Mono', monospace;
-		font-size: 0.6rem;
-		color: #4a484f;
-		text-align: center;
-		letter-spacing: 0.05em;
-	}
-
-	/* Offline-mode HUD adjustments */
-	.hud-rec.offline .rec-dot {
-		background: #4a484f;
-		animation: none;
-	}
-
-	/* Reduced motion */
 	@media (prefers-reduced-motion: reduce) {
-		.live-preview { animation: none; }
-		.rec-dot { animation: none; }
-		.monitor-image.flicker { animation: none; }
+		[data-live-image].flicker {
+			animation: none;
+		}
 	}
 </style>
 
 <script is:inline>
 	(function () {
-		// Use GitHub Releases asset CDN directly to save bandwidth and bypass local build cycles
-		var IMAGE_URL = 'https://github.com/cccp-ps/cccp-web/releases/download/livestream/livestream.jpg';
-		var METADATA_URL = 'https://api.github.com/repos/cccp-ps/cccp-web/releases/tags/livestream';
-		var REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
-		var STALE_THRESHOLD_MS = 120 * 60 * 1000; // 2 hours
+		var root = document.querySelector('[data-live-preview]');
+		if (!root) return;
 
-		var img = document.getElementById('live-image');
-		var offline = document.getElementById('monitor-offline');
-		var rec = document.getElementById('hud-rec');
-		var label = document.querySelector('.hud-label');
-		var updatedEl = document.getElementById('last-updated');
+		var releaseUrl = root.getAttribute('data-release-src');
+		var metadataUrl = root.getAttribute('data-metadata-src');
+		var refreshInterval = 5 * 60 * 1000;
+		var staleThresholdMs = 120 * 60 * 1000;
 
-		function setStaleState(isStale) {
-			if (isStale) {
-				rec.classList.add('offline');
-				label.textContent = 'STALE DATA';
-				img.style.filter = 'grayscale(100%) brightness(0.7)';
-			} else {
-				rec.classList.remove('offline');
-				label.textContent = 'GOODCAM';
-				img.style.filter = 'none';
-			}
+		var img = root.querySelector('[data-live-image]');
+		var offline = root.querySelector('[data-offline]');
+		var rec = root.querySelector('[data-rec]');
+		var recDot = root.querySelector('[data-rec-dot]');
+		var label = root.querySelector('[data-feed-label]');
+		var updatedEl = root.querySelector('[data-last-updated]');
+
+		function hasUsableImage() {
+			return img && img.complete && img.naturalWidth > 0;
 		}
 
-		function loadImage() {
-			var url = IMAGE_URL + '?v=' + Date.now();
-			
-			// Preload the new image into memory to avoid the black flicker when changing src
-			var tempImg = new Image();
-			
-			tempImg.onload = function() {
-				offline.classList.add('hidden');
-				img.src = tempImg.src;
+		function showImage() {
+			img.classList.remove('opacity-0');
+			offline.classList.add('hidden');
+			rec.classList.remove('text-muted-foreground');
+			recDot.classList.remove('bg-muted-foreground');
+			recDot.classList.add('bg-[#c9434d]');
+		}
 
-				// Trigger flicker effect
+		function showOffline() {
+			if (hasUsableImage()) return;
+			img.classList.add('opacity-0');
+			offline.classList.remove('hidden');
+			rec.classList.add('text-muted-foreground');
+			recDot.classList.remove('bg-[#c9434d]');
+			recDot.classList.add('bg-muted-foreground');
+		}
+
+		function setStaleState(isStale) {
+			img.classList.toggle('stale', isStale);
+			label.textContent = isStale ? 'STALE DATA' : 'Live Feed';
+		}
+
+		function setImage(url) {
+			var tempImg = new Image();
+			tempImg.onload = function() {
+				img.src = tempImg.src;
+				showImage();
 				img.classList.remove('flicker');
-				void img.offsetWidth; // Force reflow
+				void img.offsetWidth;
 				img.classList.add('flicker');
 			};
-
-			tempImg.onerror = function() {
-				// Only show offline if the component doesn't already have a valid image displayed
-				if (!img.getAttribute('src')) {
-					offline.classList.remove('hidden');
-					rec.classList.add('offline');
-				}
-			};
-
+			tempImg.onerror = showOffline;
 			tempImg.src = url;
 		}
 
+		function loadImage() {
+			setImage(releaseUrl + '?v=' + Date.now());
+		}
+
 		function loadMetadata() {
-			fetch(METADATA_URL + '?v=' + Date.now())
+			fetch(metadataUrl + '?v=' + Date.now())
 				.then(function (res) {
 					if (!res.ok) throw new Error('HTTP ' + res.status);
 					return res.json();
 				})
 				.then(function (data) {
-					if (data && data.assets) {
-						var asset = data.assets.find(function(a) { return a.name === 'livestream.jpg'; });
-						if (asset && asset.updated_at) {
-							var date = new Date(asset.updated_at);
-							var ageMs = Date.now() - date.getTime();
-							
-							setStaleState(ageMs > STALE_THRESHOLD_MS);
+					if (!data || !data.assets) return;
+					var asset = data.assets.find(function(asset) { return asset.name === 'livestream.jpg'; });
+					if (!asset || !asset.updated_at) return;
 
-							updatedEl.textContent = 'Last captured: ' + date.toLocaleString(undefined, {
-								month: 'short',
-								day: 'numeric',
-								year: 'numeric',
-								hour: 'numeric',
-								minute: '2-digit'
-							});
-						}
-					}
+					var date = new Date(asset.updated_at);
+					var ageMs = Date.now() - date.getTime();
+					setStaleState(ageMs > staleThresholdMs);
+					updatedEl.textContent = 'Last captured ' + date.toLocaleString(undefined, {
+						month: 'short',
+						day: 'numeric',
+						hour: 'numeric',
+						minute: '2-digit'
+					});
 				})
-				.catch(function (err) {
-					console.error("Failed to load livestream metadata:", err);
+				.catch(function () {
+					updatedEl.textContent = hasUsableImage() ? 'Live image loaded' : '';
 				});
+		}
+
+		img.addEventListener('load', showImage);
+		img.addEventListener('error', function () {
+			setImage(releaseUrl + '?v=' + Date.now());
+		});
+
+		if (hasUsableImage()) {
+			showImage();
 		}
 
 		function refresh() {
@@ -342,6 +202,6 @@ const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam";
 		}
 
 		refresh();
-		setInterval(refresh, REFRESH_INTERVAL);
+		setInterval(refresh, refreshInterval);
 	})();
 </script>
