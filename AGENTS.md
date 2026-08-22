@@ -59,9 +59,15 @@ Dark mode is not toggleable: `<html lang="en" class="dark">` is hardcoded in
 
 ## Framework boundaries
 
-Svelte and Solid integrations are both registered in `astro.config.mjs`, but `src/` currently
-contains only `.astro` files. When adding the first island: `tsconfig.json` sets
-`jsxImportSource: "solid-js"`, so any `.tsx` file is Solid, not React. Use `.svelte` for Svelte.
+`astro.config.mjs` registers the Svelte integration only, and `src/` contains no islands at
+all — all four files are `.astro`. Svelte is kept on purpose even while unused: Svelte 5 is
+the sanctioned island framework for this stack, so the first island should be a `.svelte`
+file and needs no config change.
+
+The SolidJS integration was registered alongside it until it was removed; the repo never held
+a Solid component, and Solid is out of scope for this stack. `tsconfig.json` therefore no
+longer sets `jsx`/`jsxImportSource`, and a `.tsx` file is now wired to no renderer at all —
+don't add one without first choosing a renderer and configuring it.
 
 ## CI and deploy
 
@@ -80,4 +86,5 @@ contains only `.astro` files. When adding the first island: `tsconfig.json` sets
   Solid: hydration directives, framework boundaries, Astro Actions vs endpoints, UnoCSS
   static-extraction safety, `astro:env` usage. Read the relevant section before adding an
   island, a route, an API endpoint, or new UnoCSS patterns. It is the source of truth for
-  those conventions; this file does not restate them.
+  those conventions; this file does not restate them. Its SolidJS sections are the one
+  exception — Solid is no longer part of this repo, so treat that guidance as inapplicable.
