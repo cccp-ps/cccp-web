@@ -16,6 +16,12 @@ to GitHub Pages. Bun is the package manager and task runner (`bun.lock`; CI uses
 - `bun run scripts/capture-livestream.ts` — requires `ffmpeg` on `PATH`; point it elsewhere
   with `WS_URL=...`.
 
+`typescript` is pinned to `^6.0.3` on purpose. `@astrojs/check` 0.9.9 bundles a language
+server that expects the TypeScript 5/6 JS API (its peer range is `^5.0.0 || ^6.0.0`); under
+TypeScript 7 `astro check` throws `Cannot read properties of undefined (reading 'fileExists')`
+before it inspects a single file, so the gate silently passes nothing. TypeScript 7 also has
+no Svelte toolchain support yet. Don't raise this pin until `@astrojs/check` supports it.
+
 There is no test runner and no `test` script. If a change needs verification, use
 `bun run check` plus `bun run build` rather than introducing a test stack.
 
