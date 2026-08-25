@@ -12,7 +12,7 @@
 	"dependencies": {
 		"@astrojs/svelte": "^9.0.0",
 		"@unocss/astro": "^66.6.8",
-		"astro": "7.2.6",
+		"astro": "7.2.7",
 		"svelte": "^5.55.5",
 		"unocss": "^66.6.8"
 	},
