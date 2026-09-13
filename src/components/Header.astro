@@ -1,0 +1,21 @@
+---
+const streamUrl = "https://live.cccp.ps/stream.html?src=goodcam";
+const discordUrl = "https://discord.com/channels/333693176944525324/772394563792666673";
+---
+
+<header class="relative z-10 w-full border-b border-border bg-background/80 backdrop-blur">
+	<div class="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+		<a href="/" class="inline-flex items-center gap-3 text-foreground transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring">
+			<img src="/cccp-logo.svg" alt="CCCP.PS logo" class="h-7 w-7" />
+			<span class="font-[Bebas_Neue] text-2xl leading-none tracking-[0.14em]">CCCP.PS</span>
+		</a>
+		<nav class="flex items-center gap-2 text-[0.72rem] font-bold uppercase tracking-[0.12em] text-muted-foreground" aria-label="Primary navigation">
+			<a href={streamUrl} target="_blank" rel="noopener noreferrer" class="hidden rounded-md px-3 py-2 transition hover:bg-accent hover:text-accent-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:inline-flex">
+				Live
+			</a>
+			<a href={discordUrl} target="_blank" rel="noopener noreferrer" class="inline-flex rounded-md border border-border bg-secondary px-3 py-2 text-secondary-foreground transition hover:border-ring hover:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
+				Discord
+			</a>
+		</nav>
+	</div>
+</header>

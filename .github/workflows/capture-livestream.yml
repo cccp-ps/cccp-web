@@ -1,0 +1,43 @@
+name: Capture Livestream Screenshot
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version: 1.4.2
+
+      - name: Install FFmpeg
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+
+      - name: Capture livestream frame
+        run: bun run scripts/capture-livestream.ts
+
+      - name: Create release (first run only)
+        run: gh release create livestream --title "Livestream Screenshots" --notes "Auto-updated livestream capture" || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload screenshot to release
+        run: |
+          gh release upload livestream livestream.jpg --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          # Uncomment and configure a Discord/Slack webhook secret to enable failure alerts
+          # curl -X POST -H 'Content-type: application/json' --data '{"text":"🚨 Livestream capture failed."}' ${{ secrets.DISCORD_WEBHOOK }}

@@ -1,0 +1,30 @@
+name: immortality
+
+on:
+  schedule:
+    # run once a month on the first day of the month at 00:35 UTC
+    - cron: '35 0 1 * *'
+  workflow_dispatch: {}
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+      - name: Keep workflow alive
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          gh api --paginate "repos/$REPOSITORY/actions/workflows" \
+            --jq '.workflows[] | select(.state == "active" or .state == "disabled_inactivity") | select(.path | startswith(".github/workflows/")) | .id' \
+            > "$RUNNER_TEMP/keepalive-workflows"
+          result=0
+          while IFS= read -r workflow; do
+            gh api --method PUT "repos/$REPOSITORY/actions/workflows/$workflow/enable" || result=1
+          done < "$RUNNER_TEMP/keepalive-workflows"
+          exit "$result"

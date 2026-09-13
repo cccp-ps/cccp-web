@@ -1,0 +1,207 @@
+---
+const STREAM_URL = "https://live.cccp.ps/stream.html?src=goodcam";
+const LOCAL_IMAGE_URL = "/livestream.jpg";
+const RELEASE_IMAGE_URL =
+	"https://github.com/cccp-ps/cccp-web/releases/download/livestream/livestream.jpg";
+const METADATA_URL = "https://api.github.com/repos/cccp-ps/cccp-web/releases/tags/livestream";
+---
+
+<section
+	class="w-full max-w-5xl"
+	aria-label="Live camera feed"
+	data-live-preview
+	data-local-src={LOCAL_IMAGE_URL}
+	data-release-src={RELEASE_IMAGE_URL}
+	data-metadata-src={METADATA_URL}
+>
+	<a
+		href={STREAM_URL}
+		target="_blank"
+		rel="noopener noreferrer"
+		class="group block rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ring"
+		aria-label="Open the live feed in a new tab"
+	>
+		<div class="relative aspect-video overflow-hidden rounded-md border border-border bg-card shadow-[0_28px_90px_rgba(0,0,0,0.42)] transition group-hover:border-ring">
+			<div class="pointer-events-none absolute inset-x-0 top-0 z-[3] flex justify-between p-3 sm:p-4" aria-hidden="true">
+				<span class="inline-flex items-center gap-2 rounded-sm bg-background/75 px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-foreground backdrop-blur" data-rec>
+					<span class="h-1.5 w-1.5 rounded-full bg-[#c9434d] motion-safe:animate-pulse" data-rec-dot></span>
+					REC
+				</span>
+				<span class="inline-flex items-center rounded-sm bg-background/75 px-2.5 py-1 font-mono text-[0.6rem] uppercase tracking-[0.16em] text-foreground backdrop-blur" data-feed-label>
+					Live Feed
+				</span>
+			</div>
+
+			<img
+				class="block h-full w-full object-cover opacity-0 transition-opacity duration-200"
+				data-live-image
+				src={LOCAL_IMAGE_URL}
+				alt="Live camera screenshot from the CCCP.PS server room"
+				width="1280"
+				height="720"
+				loading="eager"
+				decoding="async"
+				fetchpriority="high"
+			/>
+
+			<div class="absolute inset-0 z-[1] flex items-center justify-center bg-card" data-offline>
+				<span class="relative font-[Bebas_Neue] text-[clamp(1.8rem,6vw,4rem)] tracking-[0.28em] text-muted-foreground">NO SIGNAL</span>
+			</div>
+
+			<div class="pointer-events-none absolute inset-0 z-[4] bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(0,0,0,0.12)_2px,rgba(0,0,0,0.12)_4px)] opacity-35" aria-hidden="true"></div>
+			<div class="pointer-events-none absolute inset-0 z-[4] bg-[radial-gradient(circle_at_50%_45%,transparent_55%,rgba(0,0,0,0.44)_100%)]" aria-hidden="true"></div>
+		</div>
+	</a>
+
+	<div class="mt-3 flex flex-col items-center justify-between gap-2 text-center sm:flex-row sm:text-left">
+		<a
+			href={STREAM_URL}
+			target="_blank"
+			rel="noopener noreferrer"
+			class="inline-flex items-center gap-2 rounded-md border border-border bg-secondary/80 px-3 py-2 text-[0.72rem] font-bold uppercase tracking-[0.12em] text-secondary-foreground transition hover:border-ring hover:bg-accent focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+		>
+			Open live view
+			<svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+		</a>
+		<span class="text-[0.68rem] uppercase tracking-[0.12em] text-muted-foreground" data-last-updated aria-live="polite"></span>
+	</div>
+</section>
+
+<noscript>
+	<style>
+		[data-live-image] {
+			opacity: 1;
+		}
+
+		[data-offline] {
+			display: none;
+		}
+	</style>
+</noscript>
+
+<style>
+	[data-live-image].flicker {
+		animation: cctv-flicker 0.2s ease-out;
+	}
+
+	[data-live-image].stale {
+		filter: grayscale(100%) brightness(0.7);
+	}
+
+	@keyframes cctv-flicker {
+		0% { opacity: 1; }
+		30% { opacity: 0.7; }
+		100% { opacity: 1; }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		[data-live-image].flicker {
+			animation: none;
+		}
+	}
+</style>
+
+<script is:inline>
+	(function () {
+		var root = document.querySelector('[data-live-preview]');
+		if (!root) return;
+
+		var releaseUrl = root.getAttribute('data-release-src');
+		var metadataUrl = root.getAttribute('data-metadata-src');
+		var refreshInterval = 5 * 60 * 1000;
+		var staleThresholdMs = 120 * 60 * 1000;
+
+		var img = root.querySelector('[data-live-image]');
+		var offline = root.querySelector('[data-offline]');
+		var rec = root.querySelector('[data-rec]');
+		var recDot = root.querySelector('[data-rec-dot]');
+		var label = root.querySelector('[data-feed-label]');
+		var updatedEl = root.querySelector('[data-last-updated]');
+
+		function hasUsableImage() {
+			return img && img.complete && img.naturalWidth > 0;
+		}
+
+		function showImage() {
+			img.classList.remove('opacity-0');
+			offline.classList.add('hidden');
+			rec.classList.remove('text-muted-foreground');
+			recDot.classList.remove('bg-muted-foreground');
+			recDot.classList.add('bg-[#c9434d]');
+		}
+
+		function showOffline() {
+			if (hasUsableImage()) return;
+			img.classList.add('opacity-0');
+			offline.classList.remove('hidden');
+			rec.classList.add('text-muted-foreground');
+			recDot.classList.remove('bg-[#c9434d]');
+			recDot.classList.add('bg-muted-foreground');
+		}
+
+		function setStaleState(isStale) {
+			img.classList.toggle('stale', isStale);
+			label.textContent = isStale ? 'STALE DATA' : 'Live Feed';
+		}
+
+		function setImage(url) {
+			var tempImg = new Image();
+			tempImg.onload = function() {
+				img.src = tempImg.src;
+				showImage();
+				img.classList.remove('flicker');
+				void img.offsetWidth;
+				img.classList.add('flicker');
+			};
+			tempImg.onerror = showOffline;
+			tempImg.src = url;
+		}
+
+		function loadImage() {
+			setImage(releaseUrl + '?v=' + Date.now());
+		}
+
+		function loadMetadata() {
+			fetch(metadataUrl + '?v=' + Date.now())
+				.then(function (res) {
+					if (!res.ok) throw new Error('HTTP ' + res.status);
+					return res.json();
+				})
+				.then(function (data) {
+					if (!data || !data.assets) return;
+					var asset = data.assets.find(function(asset) { return asset.name === 'livestream.jpg'; });
+					if (!asset || !asset.updated_at) return;
+
+					var date = new Date(asset.updated_at);
+					var ageMs = Date.now() - date.getTime();
+					setStaleState(ageMs > staleThresholdMs);
+					updatedEl.textContent = 'Last captured ' + date.toLocaleString(undefined, {
+						month: 'short',
+						day: 'numeric',
+						hour: 'numeric',
+						minute: '2-digit'
+					});
+				})
+				.catch(function () {
+					updatedEl.textContent = hasUsableImage() ? 'Live image loaded' : '';
+				});
+		}
+
+		img.addEventListener('load', showImage);
+		img.addEventListener('error', function () {
+			setImage(releaseUrl + '?v=' + Date.now());
+		});
+
+		if (hasUsableImage()) {
+			showImage();
+		}
+
+		function refresh() {
+			loadImage();
+			loadMetadata();
+		}
+
+		refresh();
+		setInterval(refresh, refreshInterval);
+	})();
+</script>
