@@ -34,7 +34,7 @@ jobs:
     uses: cccp-ps/automation/.github/workflows/bun.yml@v1.0.0
     with:
       # renovate: datasource=npm depName=bun
-      version: 1.4.2
+      version: 1.4.3
       command: bun run ci
   required:
     name: ci / required
